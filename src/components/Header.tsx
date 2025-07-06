@@ -1,6 +1,7 @@
 import React from 'react';
 import { Shield, Menu, Copy, CheckCircle, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { SafeWallet } from '../App';
 
 type Page = 'dashboard' | 'create-safe' | 'transaction' | 'owners';
@@ -93,6 +94,7 @@ export function Header({ currentPage, selectedWallet, onNavigate, onSwitchWallet
                   <Copy className="h-4 w-4 text-gray-400" />
                 )}
               </button>
+              <ConnectButton />
 
               {/* Status Indicator */}
               <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
