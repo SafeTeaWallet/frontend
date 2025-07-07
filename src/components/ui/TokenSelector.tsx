@@ -131,7 +131,7 @@ export function TokenSelector({
       {/* Dropdown */}
       {isOpen && (
         <div className="absolute top-full left-0 right-0 mt-2 z-50">
-          <GlassCard className="p-4 max-h-80 overflow-hidden">
+          <GlassCard className="p-4 max-h-80 overflow-hidden bg-black/60 backdrop-blur-xl border-white/20">
             {/* Search */}
             <div className="relative mb-4">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -158,7 +158,7 @@ export function TokenSelector({
 
             {/* Custom Token Input */}
             {showCustomInput && (
-              <div className="mb-4 p-4 rounded-lg bg-white/5 border border-white/10">
+              <div className="mb-4 p-4 rounded-lg bg-black/40 border border-white/20">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-white font-medium text-sm">Add Custom Token</h4>
                   <button
@@ -203,7 +203,7 @@ export function TokenSelector({
                   )}
 
                   {customTokenData && (
-                    <div className="p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+                    <div className="p-3 rounded-lg bg-green-500/20 border border-green-500/30 backdrop-blur-sm">
                       <div className="flex items-center space-x-2 mb-2">
                         <CheckCircle className="h-4 w-4 text-green-400" />
                         <span className="text-green-400 font-medium text-sm">Token Found</span>
@@ -238,7 +238,7 @@ export function TokenSelector({
                       onSelectToken(token);
                       setIsOpen(false);
                     }}
-                    className="w-full p-3 rounded-lg hover:bg-white/5 transition-colors flex items-center space-x-3 text-left"
+                    className="w-full p-3 rounded-lg hover:bg-white/10 transition-colors flex items-center space-x-3 text-left"
                   >
                     <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center overflow-hidden">
                       {token.logoURI ? (
@@ -267,7 +267,7 @@ export function TokenSelector({
 
             {/* Clear Selection */}
             {selectedToken && (
-              <div className="mt-4 pt-4 border-t border-white/10">
+              <div className="mt-4 pt-4 border-t border-white/20">
                 <Button
                   variant="ghost"
                   size="sm"

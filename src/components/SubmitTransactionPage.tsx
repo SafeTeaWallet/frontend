@@ -5,7 +5,6 @@ import { GlassCard } from './ui/GlassCard';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { TokenSelector } from './ui/TokenSelector';
-import { WalletConnectModal } from './ui/WalletConnectModal';
 import { useWalletGuard } from '../hooks/useWalletGuard';
 import { Token, TransactionData } from '../App';
 
@@ -17,7 +16,7 @@ interface SubmitTransactionPageProps {
 
 export function SubmitTransactionPage({ tokens, onSubmit, onAddToken }: SubmitTransactionPageProps) {
   const navigate = useNavigate();
-  const { showModal, requireWallet, closeModal } = useWalletGuard();
+  const { requireWallet } = useWalletGuard();
   const [transactionType, setTransactionType] = useState<'legacy' | 'token'>('legacy');
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
@@ -282,14 +281,6 @@ export function SubmitTransactionPage({ tokens, onSubmit, onAddToken }: SubmitTr
           </GlassCard>
         </div>
       </div>
-
-      {/* Wallet Connect Modal */}
-      <WalletConnectModal
-        isOpen={showModal}
-        onClose={closeModal}
-        title="Connect Wallet to Submit Transaction"
-        message="You need to connect your wallet to submit transactions. Please connect your wallet to continue with creating your transaction."
-      />
     </div>
   );
 }

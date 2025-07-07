@@ -4,7 +4,6 @@ import { Shield, Plus, Users, Clock, CheckCircle, Copy, ArrowRight, Search, Filt
 import { GlassCard } from './ui/GlassCard';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
-import { WalletConnectModal } from './ui/WalletConnectModal';
 import { useWalletGuard } from '../hooks/useWalletGuard';
 import { SafeWallet } from '../App';
 
@@ -15,7 +14,7 @@ interface WalletSelectionProps {
 
 export function WalletSelection({ wallets, onSelectWallet }: WalletSelectionProps) {
   const navigate = useNavigate();
-  const { showModal, requireWallet, closeModal } = useWalletGuard();
+  const { requireWallet } = useWalletGuard();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'active' | 'inactive'>('all');
 
@@ -268,14 +267,6 @@ export function WalletSelection({ wallets, onSelectWallet }: WalletSelectionProp
           </div>
         )}
       </div>
-
-      {/* Wallet Connect Modal */}
-      <WalletConnectModal
-        isOpen={showModal}
-        onClose={closeModal}
-        title="Connect Wallet to Continue"
-        message="You need to connect your wallet to create or access SafeTea wallets. Please connect your wallet to get started."
-      />
     </div>
   );
 }

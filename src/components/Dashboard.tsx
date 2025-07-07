@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Copy, Plus, Users, Eye, Clock, CheckCircle, XCircle, ArrowRight, Coins, RefreshCw } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
 import { Button } from './ui/Button';
-import { WalletConnectModal } from './ui/WalletConnectModal';
 import { useWalletGuard } from '../hooks/useWalletGuard';
 import { Token, SafeWallet } from '../App';
 
@@ -17,7 +16,7 @@ export function Dashboard({
   tokens,
 }: DashboardProps) {
   const navigate = useNavigate();
-  const { showModal, requireWallet, closeModal } = useWalletGuard();
+  const { requireWallet } = useWalletGuard();
 
   const recentTransactions = [
     {
@@ -296,14 +295,6 @@ export function Dashboard({
           </div>
         )}
       </GlassCard>
-
-      {/* Wallet Connect Modal */}
-      <WalletConnectModal
-        isOpen={showModal}
-        onClose={closeModal}
-        title="Connect Wallet Required"
-        message="You need to connect your wallet to access this feature. Please connect your wallet to continue."
-      />
     </div>
   );
 }
