@@ -1,15 +1,13 @@
-import { useState } from 'react';
 import { useAccount } from 'wagmi';
 import { useNavigate } from 'react-router-dom';
 
 export function useWalletGuard() {
   const { isConnected } = useAccount();
   const navigate = useNavigate();
-  const [showModal, setShowModal] = useState(false);
 
   const requireWallet = (callback?: () => void) => {
     if (!isConnected) {
-      // Redirect to landing page instead of showing modal
+      // Redirect to landing page for wallet connection
       navigate('/');
       return false;
     }
@@ -17,12 +15,8 @@ export function useWalletGuard() {
     return true;
   };
 
-  const closeModal = () => setShowModal(false);
-
   return {
     isConnected,
-    showModal,
-    requireWallet,
-    closeModal
+    requireWallet
   };
 }
