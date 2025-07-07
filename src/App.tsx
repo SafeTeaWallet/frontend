@@ -214,6 +214,7 @@ function App() {
               <SubmitTransactionPage
                 tokens={tokens}
                 onSubmit={handleSubmitTransaction}
+                onAddToken={handleAddToken}
               />
             </WalletRequiredRoute>
           } />

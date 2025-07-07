@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Send, ChevronDown, Coins, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Send, Coins, ArrowRight } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
+import { TokenSelector } from './ui/TokenSelector';
+import { WalletConnectModal } from './ui/WalletConnectModal';
+import { useWalletGuard } from '../hooks/useWalletGuard';
 import { Token, TransactionData } from '../App';
 
 interface SubmitTransactionPageProps {
   tokens: Token[];
   onSubmit: (transaction: TransactionData) => void;
+  onAddToken: (token: Token) => void;
 }
 
-export function SubmitTransactionPage({ tokens, onSubmit }: SubmitTransactionPageProps) {
+export function SubmitTransactionPage({ tokens, onSubmit, onAddToken }: SubmitTransactionPageProps) {
   const navigate = useNavigate();
+  const { showModal, requireWallet, closeModal } = useWalletGuard();
   const [transactionType, setTransactionType] = useState<'legacy' | 'token'>('legacy');
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
@@ -22,6 +27,9 @@ export function SubmitTransactionPage({ tokens, onSubmit }: SubmitTransactionPag
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!requireWallet()) return;
+    
     setIsSubmitting(true);
     
     // Simulate validation
@@ -128,27 +136,15 @@ export function SubmitTransactionPage({ tokens, onSubmit }: SubmitTransactionPag
                   <label className="block text-sm font-medium text-gray-300 mb-2">
                     Select Token
                   </label>
-                  <div className="relative">
-                    <select
-                      value={selectedToken?.address || ''}
-                      onChange={(e) => {
-                        const token = tokens.find(t => t.address === e.target.value);
-                        setSelectedToken(token || null);
-                      }}
-                      className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none cursor-pointer"
-                      required
-                    >
-                      <option value="" className="bg-gray-800">Select a token</option>
-                      {tokens.map((token) => (
-                        <option key={token.address} value={token.address} className="bg-gray-800">
-                          {token.symbol} - {token.balance}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
-                  </div>
+                  <TokenSelector
+                    tokens={tokens}
+                    selectedToken={selectedToken}
+                    onSelectToken={setSelectedToken}
+                    onAddToken={onAddToken}
+                    placeholder="Choose a token to send"
+                  />
                   <p className="text-gray-400 text-sm mt-1">
-                    Choose which token to send from your wallet
+                    Select a token from your wallet or add a custom token
                   </p>
                 </div>
               )}
@@ -286,6 +282,14 @@ export function SubmitTransactionPage({ tokens, onSubmit }: SubmitTransactionPag
           </GlassCard>
         </div>
       </div>
+
+      {/* Wallet Connect Modal */}
+      <WalletConnectModal
+        isOpen={showModal}
+        onClose={closeModal}
+        title="Connect Wallet to Submit Transaction"
+        message="You need to connect your wallet to submit transactions. Please connect your wallet to continue with creating your transaction."
+      />
     </div>
   );
 }

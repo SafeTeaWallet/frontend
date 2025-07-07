@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Copy, Plus, Users, Eye, Clock, CheckCircle, XCircle, ArrowRight, Coins, RefreshCw } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
 import { Button } from './ui/Button';
+import { WalletConnectModal } from './ui/WalletConnectModal';
+import { useWalletGuard } from '../hooks/useWalletGuard';
 import { Token, SafeWallet } from '../App';
 
 interface DashboardProps {
@@ -15,6 +17,7 @@ export function Dashboard({
   tokens,
 }: DashboardProps) {
   const navigate = useNavigate();
+  const { showModal, requireWallet, closeModal } = useWalletGuard();
 
   const recentTransactions = [
     {
@@ -141,14 +144,14 @@ export function Dashboard({
             {/* Quick Actions */}
             <div className="space-y-4">
               <Button 
-                onClick={() => navigate('/submit-transaction')}
+                onClick={() => requireWallet(() => navigate('/submit-transaction'))}
                 className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Submit Transaction
               </Button>
               
-              <Button variant="outline" onClick={() => navigate('/owners')} className="w-full">
+              <Button variant="outline" onClick={() => requireWallet(() => navigate('/owners'))} className="w-full">
                 <Users className="h-4 w-4 mr-2" />
                 Manage Owners
               </Button>
@@ -162,7 +165,7 @@ export function Dashboard({
         <GlassCard className="p-6">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-light text-white">Token Balances</h2>
-            <Button variant="outline" size="sm" onClick={() => navigate('/import-token')}>
+            <Button variant="outline" size="sm" onClick={() => requireWallet(() => navigate('/import-token'))}>
               <Coins className="h-4 w-4 mr-2" />
               Import Token
             </Button>
@@ -246,7 +249,7 @@ export function Dashboard({
       <GlassCard className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-light text-white">Recent Transactions</h2>
-          <Button variant="ghost" size="sm" onClick={() => navigate('/transactions')}>
+          <Button variant="ghost" size="sm" onClick={() => requireWallet(() => navigate('/transactions'))}>
             View All
             <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
@@ -256,7 +259,7 @@ export function Dashboard({
           {recentTransactions.map((tx) => (
             <div
               key={tx.id}
-              onClick={() => navigate(`/transaction/${tx.id}`)}
+              onClick={() => requireWallet(() => navigate(`/transaction/${tx.id}`))}
               className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer"
             >
               <div className="flex items-center space-x-4">
@@ -293,6 +296,14 @@ export function Dashboard({
           </div>
         )}
       </GlassCard>
+
+      {/* Wallet Connect Modal */}
+      <WalletConnectModal
+        isOpen={showModal}
+        onClose={closeModal}
+        title="Connect Wallet Required"
+        message="You need to connect your wallet to access this feature. Please connect your wallet to continue."
+      />
     </div>
   );
 }
