@@ -6,13 +6,16 @@ import '@rainbow-me/rainbowkit/styles.css';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { WagmiProvider } from 'wagmi';
 import { RainbowKitProvider, darkTheme } from '@rainbow-me/rainbowkit';
+import ReactDOM from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 
 import { config } from './configs/wagmi-config.ts';
 
 const queryClient = new QueryClient();
 
-createRoot(document.getElementById('root')!).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <StrictMode>
+     <BrowserRouter>
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <RainbowKitProvider
@@ -28,5 +31,6 @@ createRoot(document.getElementById('root')!).render(
         </RainbowKitProvider>
       </QueryClientProvider>
     </WagmiProvider>
+    </BrowserRouter>
   </StrictMode>
 );

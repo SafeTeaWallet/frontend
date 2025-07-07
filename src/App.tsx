@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Routes, Route, useNavigate, Navigate } from 'react-router-dom';
 import { Header } from './components/Header';
 import { LandingPage } from './components/LandingPage';
 import { Dashboard } from './components/Dashboard';
@@ -11,8 +12,6 @@ import { SubmitTransactionPage } from './components/SubmitTransactionPage';
 import { AddOwnerPage } from './components/AddOwnerPage';
 import { ImportTokenPage } from './components/ImportTokenPage';
 import { ConfirmTransactionPage } from './components/ConfirmTransactionPage';
-
-type Page = 'landing' | 'wallet-selection' | 'dashboard' | 'create-safe' | 'transaction' | 'all-transactions' | 'owners' | 'submit-transaction' | 'add-owner' | 'import-token' | 'confirm-transaction';
 
 export interface Token {
   address: string;
@@ -45,13 +44,12 @@ export interface SafeWallet {
 }
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<Page>('landing');
+  const navigate = useNavigate();
   const [selectedTransaction, setSelectedTransaction] = useState<string | null>(null);
   const [pendingTransaction, setPendingTransaction] = useState<TransactionData | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [selectedWallet, setSelectedWallet] = useState<SafeWallet | null>(null);
 
-  // Mock wallet data
   const [wallets, setWallets] = useState<SafeWallet[]>([
     {
       id: '1',
@@ -91,7 +89,6 @@ function App() {
     }
   ]);
 
-  // Token management
   const [tokens, setTokens] = useState<Token[]>([
     {
       address: '0xA0b86a33E6241447b4F8A8e8F3D1f76C8C2e9C1B',
@@ -119,168 +116,155 @@ function App() {
     }
   ]);
 
-  const navigateToTransaction = (txId: string) => {
-    setSelectedTransaction(txId);
-    setCurrentPage('transaction');
-  };
-
   const handleConnect = () => {
     setIsConnected(true);
-    setCurrentPage('wallet-selection');
+    navigate('/wallet-selection');
   };
 
   const handleWalletSelect = (wallet: SafeWallet) => {
     setSelectedWallet(wallet);
-    // Update all wallets to set the selected one as active
     setWallets(prev => prev.map(w => ({ ...w, isActive: w.id === wallet.id })));
-    setCurrentPage('dashboard');
+    navigate('/dashboard');
   };
 
-  const handleCreateNewSafe = () => {
-    setCurrentPage('create-safe');
-  };
+  const handleCreateNewSafe = () => navigate('/create-safe');
 
   const handleSafeCreated = (newSafe: Omit<SafeWallet, 'id'>) => {
-    const safe: SafeWallet = {
-      ...newSafe,
-      id: Date.now().toString(),
-    };
+    const safe: SafeWallet = { ...newSafe, id: Date.now().toString() };
     setWallets(prev => [...prev, safe]);
     setSelectedWallet(safe);
-    setCurrentPage('dashboard');
+    navigate('/dashboard');
   };
 
   const handleSubmitTransaction = (transactionData: TransactionData) => {
     setPendingTransaction(transactionData);
-    setCurrentPage('confirm-transaction');
+    navigate('/confirm-transaction');
   };
 
   const handleConfirmTransaction = () => {
-    setCurrentPage('dashboard');
     setPendingTransaction(null);
-    // Handle actual transaction submission here
+    navigate('/dashboard');
   };
 
   const handleAddToken = (token: Token) => {
     setTokens(prev => [...prev, token]);
-    setCurrentPage('dashboard');
+    navigate('/dashboard');
   };
 
   const handleAddOwner = () => {
-    setCurrentPage('dashboard');
-    // Handle add owner logic
-  };
-
-
-  const renderCurrentPage = () => {
-    if (!isConnected && currentPage !== 'landing') {
-      return <LandingPage onConnect={handleConnect} />;
-    }
-
-    switch (currentPage) {
-      case 'landing':
-        return <LandingPage onConnect={handleConnect} />;
-      case 'wallet-selection':
-        return (
-          <WalletSelection
-            wallets={wallets}
-            onSelectWallet={handleWalletSelect}
-            onCreateNew={handleCreateNewSafe}
-          />
-        );
-      case 'dashboard':
-        return selectedWallet ? (
-          <Dashboard
-            wallet={selectedWallet}
-            tokens={tokens}
-            onSubmitTransaction={() => setCurrentPage('submit-transaction')}
-            onViewOwners={() => setCurrentPage('owners')}
-            onViewTransaction={navigateToTransaction}
-            onViewAllTransactions={() => setCurrentPage('all-transactions')}
-            onImportToken={() => setCurrentPage('import-token')}
-            onSwitchWallet={() => setCurrentPage('wallet-selection')}
-          />
-        ) : null;
-      case 'create-safe':
-        return (
-          <CreateSafe
-            onBack={() => setCurrentPage('wallet-selection')}
-            onSafeCreated={handleSafeCreated}
-          />
-        );
-      case 'transaction':
-        return (
-          <TransactionPage
-            transactionId={selectedTransaction}
-            onBack={() => setCurrentPage('dashboard')}
-          />
-        );
-      case 'all-transactions':
-        return (
-          <AllTransactionsPage
-            onBack={() => setCurrentPage('dashboard')}
-            onViewTransaction={navigateToTransaction}
-          />
-        );
-      case 'owners':
-        return selectedWallet ? (
-          <OwnerManagement
-            wallet={selectedWallet}
-            onBack={() => setCurrentPage('dashboard')}
-            onAddOwner={() => setCurrentPage('add-owner')}
-          />
-        ) : null;
-      case 'submit-transaction':
-        return (
-          <SubmitTransactionPage
-            tokens={tokens}
-            onBack={() => setCurrentPage('dashboard')}
-            onSubmit={handleSubmitTransaction}
-          />
-        );
-      case 'add-owner':
-        return selectedWallet ? (
-          <AddOwnerPage
-            wallet={selectedWallet}
-            onBack={() => setCurrentPage('owners')}
-            onSubmit={handleAddOwner}
-          />
-        ) : null;
-      case 'import-token':
-        return (
-          <ImportTokenPage
-            onBack={() => setCurrentPage('dashboard')}
-            onImport={handleAddToken}
-          />
-        );
-      case 'confirm-transaction':
-        return pendingTransaction ? (
-          <ConfirmTransactionPage
-            transaction={pendingTransaction}
-            onBack={() => setCurrentPage('submit-transaction')}
-            onConfirm={handleConfirmTransaction}
-          />
-        ) : null;
-      default:
-        return null;
-    }
+    navigate('/dashboard');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/20 via-transparent to-transparent pointer-events-none" />
-      
+
       {isConnected && selectedWallet && (
-        <Header 
-          currentPage={currentPage}
+        <Header
+          currentPage=""
           selectedWallet={selectedWallet}
-          onNavigate={setCurrentPage}
-          onSwitchWallet={() => setCurrentPage('wallet-selection')}
+          onNavigate={() => {}} // optional to remove or implement
+          onSwitchWallet={() => navigate('/wallet-selection')}
         />
       )}
-      
+
       <main className="relative z-10">
-        {renderCurrentPage()}
+        <Routes>
+          <Route path="/" element={<LandingPage onConnect={handleConnect} />} />
+          <Route path="/wallet-selection" element={
+            <WalletSelection
+              wallets={wallets}
+              onSelectWallet={handleWalletSelect}
+              onCreateNew={handleCreateNewSafe}
+            />
+          } />
+          <Route path="/dashboard" element={
+            isConnected && selectedWallet ? (
+              <Dashboard
+                wallet={selectedWallet}
+                tokens={tokens}
+                onSubmitTransaction={() => navigate('/submit-transaction')}
+                onViewOwners={() => navigate('/owners')}
+                onViewTransaction={(id) => {
+                  setSelectedTransaction(id);
+                  navigate(`/transaction/${id}`);
+                }}
+                onViewAllTransactions={() => navigate('/all-transactions')}
+                onImportToken={() => navigate('/import-token')}
+                onSwitchWallet={() => navigate('/wallet-selection')}
+              />
+            ) : (
+              <Navigate to="/" />
+            )
+          } />
+          <Route path="/create-safe" element={
+            <CreateSafe
+              onBack={() => navigate('/wallet-selection')}
+              onSafeCreated={handleSafeCreated}
+            />
+          } />
+          <Route path="/transaction/:txId" element={
+            <TransactionPage
+              transactionId={selectedTransaction}
+              onBack={() => navigate('/dashboard')}
+            />
+          } />
+          <Route path="/all-transactions" element={
+            <AllTransactionsPage
+              onBack={() => navigate('/dashboard')}
+              onViewTransaction={(id) => {
+                setSelectedTransaction(id);
+                navigate(`/transaction/${id}`);
+              }}
+            />
+          } />
+          <Route path="/owners" element={
+            selectedWallet ? (
+              <OwnerManagement
+                wallet={selectedWallet}
+                onBack={() => navigate('/dashboard')}
+                onAddOwner={() => navigate('/add-owner')}
+              />
+            ) : (
+              <Navigate to="/" />
+            )
+          } />
+          <Route path="/submit-transaction" element={
+            <SubmitTransactionPage
+              tokens={tokens}
+              onBack={() => navigate('/dashboard')}
+              onSubmit={handleSubmitTransaction}
+            />
+          } />
+          <Route path="/add-owner" element={
+            selectedWallet ? (
+              <AddOwnerPage
+                wallet={selectedWallet}
+                onBack={() => navigate('/owners')}
+                onSubmit={handleAddOwner}
+              />
+            ) : (
+              <Navigate to="/" />
+            )
+          } />
+          <Route path="/import-token" element={
+            <ImportTokenPage
+              onBack={() => navigate('/dashboard')}
+              onImport={handleAddToken}
+            />
+          } />
+          <Route path="/confirm-transaction" element={
+            pendingTransaction ? (
+              <ConfirmTransactionPage
+                transaction={pendingTransaction}
+                onBack={() => navigate('/submit-transaction')}
+                onConfirm={handleConfirmTransaction}
+              />
+            ) : (
+              <Navigate to="/dashboard" />
+            )
+          } />
+        </Routes>
       </main>
     </div>
   );
