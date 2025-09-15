@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Shield, Menu, Copy, CheckCircle, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { useAccount } from 'wagmi';
 import { SafeWallet } from '../App';
 
 
@@ -16,6 +17,7 @@ interface HeaderProps {
 export function Header({ selectedWallet }: HeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isConnected } = useAccount();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -27,9 +29,14 @@ export function Header({ selectedWallet }: HeaderProps) {
 
   const navItems = [
     { id: '/dashboard', label: 'Dashboard', path: '/dashboard' },
-    { id: '/create-safe', label: 'Create Safe', path: '/create-safe' },
     { id: '/wallets', label: 'My Wallets', path: '/wallets' },
+    { id: '/create-safe', label: 'Create Safe', path: '/create-safe' },
   ] as const;
+
+  // Don't render header if not connected
+  if (!isConnected) {
+    return null;
+  }
 
   return (
     <header className="relative z-20 border-b border-white/10">

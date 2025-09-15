@@ -1,14 +1,19 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAccount } from 'wagmi';
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Shield, Users, Lock, Zap, ArrowRight, CheckCircle } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
 import { Button } from './ui/Button';
 
 export function LandingPage() {
   const navigate = useNavigate();
+  const { isConnected } = useAccount();
 
   const handleGetStarted = () => {
-    navigate('/wallets');
+    if (isConnected) {
+      navigate('/wallets');
+    }
   };
 
   const features = [
@@ -63,14 +68,32 @@ export function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
-              <Button
-                onClick={handleGetStarted}
-                size="lg"
-                className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 px-8 py-4 text-lg"
-              >
-                Get Started
-                <ArrowRight className="h-5 w-5 ml-2" />
-              </Button>
+              {isConnected ? (
+                <Button
+                  onClick={handleGetStarted}
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 px-8 py-4 text-lg"
+                >
+                  Get Started
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </Button>
+              ) : (
+                <div className="flex flex-col items-center gap-4">
+                  <ConnectButton.Custom>
+                    {({ openConnectModal }) => (
+                      <Button
+                        onClick={openConnectModal}
+                        size="lg"
+                        className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 px-8 py-4 text-lg"
+                      >
+                        Connect Wallet to Get Started
+                        <ArrowRight className="h-5 w-5 ml-2" />
+                      </Button>
+                    )}
+                  </ConnectButton.Custom>
+                  <p className="text-gray-400 text-sm">Connect your wallet to create and manage SafeTea wallets</p>
+                </div>
+              )}
               
               <Button
                 variant="outline"
@@ -208,13 +231,30 @@ export function LandingPage() {
               Join thousands of teams and organizations who trust SafeTea to protect their digital assets.
             </p>
             <Button
-              onClick={handleGetStarted}
+              onClick={isConnected ? handleGetStarted : undefined}
               size="lg"
-              className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 px-8 py-4 text-lg"
+              className={`px-8 py-4 text-lg ${
+                isConnected 
+                  ? 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700' 
+                  : 'bg-gray-600 cursor-not-allowed opacity-50'
+              }`}
+              disabled={!isConnected}
             >
-              Get Started Now
-              <ArrowRight className="h-5 w-5 ml-2" />
+              {isConnected ? (
+                <>
+                  Get Started Now
+                  <ArrowRight className="h-5 w-5 ml-2" />
+                </>
+              ) : (
+                'Connect Wallet First'
+              )}
             </Button>
+            
+            {!isConnected && (
+              <div className="mt-4">
+                <ConnectButton />
+              </div>
+            )}
           </GlassCard>
         </div>
       </div>

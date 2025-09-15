@@ -1,8 +1,9 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { mainnet } from 'wagmi/chains';
+import { mainnet, sepolia } from 'wagmi/chains';
 
 export const config = getDefaultConfig({
   appName: 'SafeTea Wallet',
-  projectId: 'YOUR_PROJECT_ID',
-  chains: [mainnet],
+  projectId: process.env.VITE_WALLETCONNECT_PROJECT_ID || 'YOUR_PROJECT_ID',
+  chains: [mainnet, sepolia],
+  ssr: false,
 });

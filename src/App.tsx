@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
+import { useAccount } from "wagmi";
 import { Header } from "./components/Header";
 import { LandingPage } from "./components/LandingPage";
 import { Dashboard } from "./components/Dashboard";
@@ -12,7 +13,6 @@ import { SubmitTransactionPage } from "./components/SubmitTransactionPage";
 import { AddOwnerPage } from "./components/AddOwnerPage";
 import { ImportTokenPage } from "./components/ImportTokenPage";
 import { ConfirmTransactionPage } from "./components/ConfirmTransactionPage";
-import { useAccount } from "wagmi";
 
 export interface Token {
   address: string;
@@ -157,23 +157,15 @@ function App() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/20 via-transparent to-transparent pointer-events-none" />
 
-      {/* Show header only when connected and not on landing page */}
-      <Routes>
-        <Route path="/" element={null} />
-        <Route
-          path="*"
-          element={
-            isConnected ? (
-              <Header
-                currentPage=""
-                selectedWallet={selectedWallet}
-                onNavigate={() => {}}
-                onSwitchWallet={() => {}}
-              />
-            ) : null
-          }
+      {/* Show header when connected and not on landing page */}
+      {isConnected && window.location.pathname !== '/' && (
+        <Header
+          currentPage=""
+          selectedWallet={selectedWallet}
+          onNavigate={() => {}}
+          onSwitchWallet={() => {}}
         />
-      </Routes>
+      )}
 
       <main className="relative z-10">
         <Routes>
