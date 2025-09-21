@@ -38,9 +38,12 @@ export function Dashboard({
     .slice(0, 5) // Show only 5 most recent
     .map(formatTransactionForDisplay);
 
-  // Debug logging
-  console.log('Dashboard - selectedWalletTransactions:', selectedWalletTransactions);
-  console.log('Dashboard - recentTransactions:', recentTransactions);
+  console.log('Dashboard render:', {
+    wallet: wallet?.address,
+    selectedWalletTransactions: selectedWalletTransactions.length,
+    recentTransactions: recentTransactions.length,
+    isLoading: !selectedWalletTransactions
+  });
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -272,12 +275,21 @@ export function Dashboard({
                 </div>
               ))
             ) : (
-              <div className="text-center py-12">
-                <Eye className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                <p className="text-gray-400">No transactions yet</p>
-                <p className="text-gray-500 text-sm mt-2">
-                  Submit your first transaction to get started
-                </p>
+              <div className="text-center py-8">
+                {selectedWalletTransactions === undefined ? (
+                  <>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-400 mx-auto mb-4" />
+                    <p className="text-gray-400">Loading transactions...</p>
+                  </>
+                ) : (
+                  <>
+                    <Eye className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-400">No transactions yet</p>
+                    <p className="text-gray-500 text-sm mt-2">
+                      Submit your first transaction to get started
+                    </p>
+                  </>
+                )}
               </div>
             )}
           </div>

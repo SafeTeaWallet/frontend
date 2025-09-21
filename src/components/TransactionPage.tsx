@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Copy, CheckCircle, Clock, XCircle, ExternalLink } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
 import { Button } from './ui/Button';
+import { TransactionModal } from './ui/TransactionModal';
+import { useTransactionModal } from '../hooks/useTransactionModal';
 import { useContracts } from '../hooks/useContracts';
 import { useSafeWallets } from '../hooks/useSafeWallets';
 
@@ -11,10 +13,8 @@ export function TransactionPage() {
   const { txId } = useParams<{ txId: string }>();
   const { confirmTransaction, rejectTransaction, getWalletContract } = useContracts();
   const { selectedWallet, selectedWalletTransactions, refreshWalletData } = useSafeWallets();
+  const { modalState, openModal, closeModal, updateTransactionHash } = useTransactionModal();
   
-  const [isConfirming, setIsConfirming] = useState(false);
-  const [isRejecting, setIsRejecting] = useState(false);
-  const [isExecuting, setIsExecuting] = useState(false);
   const [ownerConfirmations, setOwnerConfirmations] = useState<Array<{address: string, confirmed: boolean, isSubmitter: boolean}>>([]);
 
   const txIndex = parseInt(txId || '0');
@@ -69,43 +69,65 @@ export function TransactionPage() {
   }
 
   const handleConfirm = async () => {
-    setIsConfirming(true);
-    try {
-      await confirmTransaction(selectedWallet.address, transaction.index);
-      refreshWalletData();
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Error confirming transaction:', error);
-    } finally {
-      setIsConfirming(false);
-    }
+    openModal({
+      title: "Confirm Transaction",
+      description: `Confirm transaction #${transaction.nonce} to ${transaction.to.slice(0, 6)}...${transaction.to.slice(-4)}`,
+      details: [
+        { label: "Transaction", value: `#${transaction.nonce}` },
+        { label: "Amount", value: transaction.value },
+        { label: "To", value: `${transaction.to.slice(0, 6)}...${transaction.to.slice(-4)}` },
+        { label: "Current Confirmations", value: `${transaction.confirmations}/${transaction.required}` },
+      ],
+      estimatedGas: "~0.001 ETH",
+      networkFee: "~$2.50",
+      onConfirm: async () => {
+        await confirmTransaction(selectedWallet.address, transaction.index);
+        refreshWalletData();
+        navigate('/dashboard');
+      },
+    });
   };
 
   const handleReject = async () => {
-    setIsRejecting(true);
-    try {
-      await rejectTransaction(selectedWallet.address, transaction.index);
-      refreshWalletData();
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Error rejecting transaction:', error);
-    } finally {
-      setIsRejecting(false);
-    }
+    openModal({
+      title: "Reject Transaction",
+      description: `Reject transaction #${transaction.nonce}. This will count as a rejection vote.`,
+      details: [
+        { label: "Transaction", value: `#${transaction.nonce}` },
+        { label: "Amount", value: transaction.value },
+        { label: "To", value: `${transaction.to.slice(0, 6)}...${transaction.to.slice(-4)}` },
+        { label: "Current Rejections", value: `${transaction.rejections}/${transaction.required}` },
+      ],
+      estimatedGas: "~0.001 ETH",
+      networkFee: "~$2.50",
+      warningMessage: "If enough owners reject this transaction, it will be permanently canceled.",
+      onConfirm: async () => {
+        await rejectTransaction(selectedWallet.address, transaction.index);
+        refreshWalletData();
+        navigate('/dashboard');
+      },
+    });
   };
 
   const handleExecute = async () => {
-    setIsExecuting(true);
-    try {
-      // Add execute transaction logic here when available
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      refreshWalletData();
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Error executing transaction:', error);
-    } finally {
-      setIsExecuting(false);
-    }
+    openModal({
+      title: "Execute Transaction",
+      description: `Execute transaction #${transaction.nonce} that has received enough confirmations.`,
+      details: [
+        { label: "Transaction", value: `#${transaction.nonce}` },
+        { label: "Amount", value: transaction.value },
+        { label: "To", value: `${transaction.to.slice(0, 6)}...${transaction.to.slice(-4)}` },
+        { label: "Confirmations", value: `${transaction.confirmations}/${transaction.required} ✓` },
+      ],
+      estimatedGas: "~0.003 ETH",
+      networkFee: "~$7.50",
+      onConfirm: async () => {
+        // Add execute transaction logic here when available
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        refreshWalletData();
+        navigate('/dashboard');
+      },
+    });
   };
 
   const status = transaction.executed ? 'executed' : transaction.canceled ? 'rejected' : 'pending';
@@ -268,37 +290,19 @@ export function TransactionPage() {
               {canConfirm && (
                 <Button
                   onClick={handleConfirm}
-                  disabled={isConfirming}
                   className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
                 >
-                  {isConfirming ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                      Confirming...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Confirm Transaction
-                    </>
-                  )}
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Confirm Transaction
                 </Button>
               )}
 
               {canExecute && (
                 <Button
                   onClick={handleExecute}
-                  disabled={isExecuting}
                   className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700"
                 >
-                  {isExecuting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                      Executing...
-                    </>
-                  ) : (
-                    'Execute Transaction'
-                  )}
+                  Execute Transaction
                 </Button>
               )}
 
@@ -307,19 +311,9 @@ export function TransactionPage() {
                   variant="outline" 
                   className="w-full"
                   onClick={handleReject}
-                  disabled={isRejecting}
                 >
-                  {isRejecting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                      Rejecting...
-                    </>
-                  ) : (
-                    <>
-                      <XCircle className="h-4 w-4 mr-2" />
-                      Reject Transaction
-                    </>
-                  )}
+                  <XCircle className="h-4 w-4 mr-2" />
+                  Reject Transaction
                 </Button>
               )}
             </div>
@@ -335,6 +329,19 @@ export function TransactionPage() {
           </GlassCard>
         </div>
       </div>
+
+      <TransactionModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        title={modalState.title}
+        description={modalState.description}
+        transactionHash={modalState.transactionHash}
+        onConfirm={modalState.onConfirm || (() => Promise.resolve())}
+        estimatedGas={modalState.estimatedGas}
+        networkFee={modalState.networkFee}
+        details={modalState.details}
+        warningMessage={modalState.warningMessage}
+      />
     </div>
   );
 }

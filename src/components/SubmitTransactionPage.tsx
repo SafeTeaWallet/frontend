@@ -6,6 +6,8 @@ import { GlassCard } from './ui/GlassCard';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { TokenSelector } from './ui/TokenSelector';
+import { TransactionModal } from './ui/TransactionModal';
+import { useTransactionModal } from '../hooks/useTransactionModal';
 import { Token, TransactionData, SafeWallet } from '../App';
 import { useContracts } from '../hooks/useContracts';
 import { useTokenBalance } from '../hooks/useTokenBalance';
@@ -21,6 +23,7 @@ interface SubmitTransactionPageProps {
 export function SubmitTransactionPage({ wallet, tokens, onSubmit, onAddToken }: SubmitTransactionPageProps) {
   const navigate = useNavigate();
   const { submitTransaction } = useContracts();
+  const { modalState, openModal, closeModal, updateTransactionHash } = useTransactionModal();
   const publicClient = usePublicClient();
   
   const [transactionType, setTransactionType] = useState<'legacy' | 'token'>('legacy');
@@ -28,7 +31,6 @@ export function SubmitTransactionPage({ wallet, tokens, onSubmit, onAddToken }: 
   const [amount, setAmount] = useState('');
   const [selectedToken, setSelectedToken] = useState<Token | null>(null);
   const [customData, setCustomData] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [gasEstimate, setGasEstimate] = useState<string>('0.002');
 
   // Get wallet balance
@@ -96,39 +98,51 @@ export function SubmitTransactionPage({ wallet, tokens, onSubmit, onAddToken }: 
       return;
     }
     
-    console.log('Submitting transaction with wallet:', wallet.address);
-    setIsSubmitting(true);
-    
-    try {
-      if (transactionType === 'legacy') {
-        // Submit ETH transaction
-        console.log('Submitting ETH transaction:', { to: recipient, amount, data: customData || '0x' });
-        await submitTransaction(
-          wallet.address,
-          recipient,
-          amount,
-          customData || '0x'
-        );
-      } else {
-        // For token transactions, we need to encode the transfer call
-        const tokenTransferData = `0xa9059cbb${recipient.slice(2).padStart(64, '0')}${Math.floor(parseFloat(amount) * Math.pow(10, selectedToken?.decimals || 18)).toString(16).padStart(64, '0')}`;
-        console.log('Submitting token transaction:', { token: selectedToken?.address, to: recipient, amount, data: tokenTransferData });
-        await submitTransaction(
-          wallet.address,
-          selectedToken?.address || '',
-          '0', // No ETH value for token transfers
-          tokenTransferData
-        );
-      }
-      
-      console.log('Transaction submitted successfully');
-      navigate('/dashboard');
-    } catch (error) {
-      console.error('Error submitting transaction:', error);
-      alert(`Error submitting transaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
-    } finally {
-      setIsSubmitting(false);
+    const details = [
+      { label: "Type", value: transactionType === 'legacy' ? 'ETH Transfer' : 'Token Transfer' },
+      { label: "To", value: `${recipient.slice(0, 6)}...${recipient.slice(-4)}` },
+      { label: "Amount", value: `${amount} ${transactionType === 'legacy' ? 'ETH' : selectedToken?.symbol || 'TOKEN'}` },
+    ];
+
+    if (transactionType === 'token' && selectedToken) {
+      details.push({ label: "Token", value: selectedToken.name });
     }
+
+    openModal({
+      title: "Submit Transaction",
+      description: "This will create a new transaction proposal that requires confirmation from other wallet owners.",
+      details,
+      estimatedGas: `~${parseFloat(gasEstimate).toFixed(6)} ETH`,
+      networkFee: `~$${(parseFloat(gasEstimate) * 2500).toFixed(2)}`,
+      warningMessage: "Make sure the recipient address is correct. This transaction will need approval from other owners.",
+      onConfirm: async () => {
+        console.log('Submitting transaction with wallet:', wallet.address);
+        
+        if (transactionType === 'legacy') {
+          // Submit ETH transaction
+          console.log('Submitting ETH transaction:', { to: recipient, amount, data: customData || '0x' });
+          await submitTransaction(
+            wallet.address,
+            recipient,
+            amount,
+            customData || '0x'
+          );
+        } else {
+          // For token transactions, we need to encode the transfer call
+          const tokenTransferData = `0xa9059cbb${recipient.slice(2).padStart(64, '0')}${Math.floor(parseFloat(amount) * Math.pow(10, selectedToken?.decimals || 18)).toString(16).padStart(64, '0')}`;
+          console.log('Submitting token transaction:', { token: selectedToken?.address, to: recipient, amount, data: tokenTransferData });
+          await submitTransaction(
+            wallet.address,
+            selectedToken?.address || '',
+            '0', // No ETH value for token transfers
+            tokenTransferData
+          );
+        }
+        
+        console.log('Transaction submitted successfully');
+        navigate('/dashboard');
+      },
+    });
   };
 
   // Get current balance
@@ -355,20 +369,11 @@ export function SubmitTransactionPage({ wallet, tokens, onSubmit, onAddToken }: 
             <div className="mt-6 pt-4 border-t border-white/10">
               <Button
                 onClick={handleSubmit}
-                disabled={!recipient || !amount || (transactionType === 'token' && !selectedToken) || isSubmitting}
+                disabled={!recipient || !amount || (transactionType === 'token' && !selectedToken)}
                 className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:opacity-50"
               >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Validating...
-                  </>
-                ) : (
-                  <>
-                    Continue
-                    <ArrowRight className="h-4 w-4 ml-2" />
-                  </>
-                )}
+                Continue
+                <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
 
               <p className="text-gray-400 text-xs text-center mt-3">
@@ -378,6 +383,19 @@ export function SubmitTransactionPage({ wallet, tokens, onSubmit, onAddToken }: 
           </GlassCard>
         </div>
       </div>
+
+      <TransactionModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        title={modalState.title}
+        description={modalState.description}
+        transactionHash={modalState.transactionHash}
+        onConfirm={modalState.onConfirm || (() => Promise.resolve())}
+        estimatedGas={modalState.estimatedGas}
+        networkFee={modalState.networkFee}
+        details={modalState.details}
+        warningMessage={modalState.warningMessage}
+      />
     </div>
   );
 }

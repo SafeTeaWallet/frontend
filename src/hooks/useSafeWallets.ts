@@ -13,15 +13,23 @@ export function useSafeWallets() {
     queryFn: async () => {
       if (!userWallets || userWallets.length === 0) return [];
 
+      console.log('Fetching wallet details for:', userWallets);
+
       const details = await Promise.all(
         userWallets.map(async (address) => {
           const walletData = await getWalletDetails(address);
           if (!walletData) return null;
 
+          console.log('Wallet data for', address, ':', walletData);
+
           const transactions = await getWalletTransactions(address);
+          console.log('Transactions for', address, ':', transactions);
+          
           const pendingTransactions = transactions.filter(
             tx => !tx.executed && !tx.canceled
           ).length;
+
+          console.log('Pending transactions for', address, ':', pendingTransactions);
 
           return {
             id: address,
@@ -49,7 +57,10 @@ export function useSafeWallets() {
     queryKey: ['walletTransactions', selectedWallet?.address],
     queryFn: () => {
       if (!selectedWallet) return [];
-      return getWalletTransactions(selectedWallet.address);
+      console.log('Fetching transactions for selected wallet:', selectedWallet.address);
+      const transactions = getWalletTransactions(selectedWallet.address);
+      console.log('Selected wallet transactions:', transactions);
+      return transactions;
     },
     enabled: !!selectedWallet,
     staleTime: 10000, // 10 seconds
@@ -69,7 +80,7 @@ export function useSafeWallets() {
 
   // Get pending transactions count for a specific wallet
   const getPendingTransactionsCount = (walletAddress: string): number => {
-    console.log(walletAddress, selectedWalletTransactions);
+    console.log('Getting pending count for:', walletAddress, 'transactions:', selectedWalletTransactions);
     
     if (!selectedWalletTransactions || selectedWallet?.address !== walletAddress) {
       return 0;
@@ -87,6 +98,7 @@ export function useSafeWallets() {
   // Format transaction for display
   const formatTransactionForDisplay = (tx: TransactionData) => {
     const status = getTransactionStatus(tx);
+    console.log('Formatting transaction:', tx, 'status:', status);
 
     return {
       id: tx.index.toString(),
@@ -107,6 +119,13 @@ export function useSafeWallets() {
       gasPrice: tx.gasPrice || '20 gwei',
     };
   };
+
+  console.log('useSafeWallets state:', {
+    wallets: walletDetails?.length || 0,
+    selectedWallet: selectedWallet?.address,
+    selectedWalletTransactions: selectedWalletTransactions?.length || 0,
+    isLoading
+  });
 
   return {
     wallets: walletDetails || [],

@@ -4,6 +4,8 @@ import { ArrowLeft, UserPlus, AlertTriangle, Users } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
+import { TransactionModal } from './ui/TransactionModal';
+import { useTransactionModal } from '../hooks/useTransactionModal';
 import { SafeWallet } from '../App';
 
 interface AddOwnerPageProps {
@@ -12,21 +14,33 @@ interface AddOwnerPageProps {
 
 export function AddOwnerPage({ wallet }: AddOwnerPageProps) {
   const navigate = useNavigate();
+  const { modalState, openModal, closeModal, updateTransactionHash } = useTransactionModal();
   const [ownerAddress, setOwnerAddress] = useState('');
   const [threshold, setThreshold] = useState(wallet.threshold);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const newTotalOwners = wallet.owners.length + 1;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     
-    // Simulate transaction submission
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    setIsSubmitting(false);
-    navigate('/owners');
+    openModal({
+      title: "Add New Owner",
+      description: "This will create a proposal to add a new owner to the Safe wallet.",
+      details: [
+        { label: "New Owner", value: `${ownerAddress.slice(0, 6)}...${ownerAddress.slice(-4)}` },
+        { label: "Current Owners", value: wallet.owners.length.toString() },
+        { label: "After Addition", value: newTotalOwners.toString() },
+        { label: "New Threshold", value: `${threshold} of ${newTotalOwners}` },
+      ],
+      estimatedGas: "~0.003 ETH",
+      networkFee: "~$7.50",
+      warningMessage: "This proposal will need confirmation from existing owners before the new owner is added.",
+      onConfirm: async () => {
+        // Simulate transaction submission
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        navigate('/owners');
+      },
+    });
   };
 
   const isValidAddress = ownerAddress.length === 42 && ownerAddress.startsWith('0x');
@@ -204,20 +218,11 @@ export function AddOwnerPage({ wallet }: AddOwnerPageProps) {
               <Button
                 type="submit"
                 onClick={handleSubmit}
-                disabled={!isValidAddress || isSubmitting}
+                disabled={!isValidAddress}
                 className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 disabled:opacity-50"
               >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                    Submitting...
-                  </>
-                ) : (
-                  <>
-                    <UserPlus className="h-4 w-4 mr-2" />
-                    Add Owner
-                  </>
-                )}
+                <UserPlus className="h-4 w-4 mr-2" />
+                Add Owner
               </Button>
 
               <p className="text-gray-400 text-xs text-center mt-3">
@@ -227,6 +232,19 @@ export function AddOwnerPage({ wallet }: AddOwnerPageProps) {
           </GlassCard>
         </div>
       </div>
+
+      <TransactionModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        title={modalState.title}
+        description={modalState.description}
+        transactionHash={modalState.transactionHash}
+        onConfirm={modalState.onConfirm || (() => Promise.resolve())}
+        estimatedGas={modalState.estimatedGas}
+        networkFee={modalState.networkFee}
+        details={modalState.details}
+        warningMessage={modalState.warningMessage}
+      />
     </div>
   );
 }

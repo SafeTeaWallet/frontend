@@ -4,6 +4,8 @@ import { Plus, Trash2, ArrowLeft, Shield } from "lucide-react";
 import { GlassCard } from "./ui/GlassCard";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
+import { TransactionModal } from "./ui/TransactionModal";
+import { useTransactionModal } from "../hooks/useTransactionModal";
 import { SafeWallet } from "../App";
 
 interface CreateSafeProps {
@@ -12,10 +14,10 @@ interface CreateSafeProps {
 
 export function CreateSafe({ onSafeCreated }: CreateSafeProps) {
   const navigate = useNavigate();
+  const { modalState, openModal, closeModal, updateTransactionHash } = useTransactionModal();
   const [safeName, setSafeName] = useState("");
   const [owners, setOwners] = useState<string[]>([""]);
   const [threshold, setThreshold] = useState(1);
-  const [isCreating, setIsCreating] = useState(false);
 
   const addOwner = () => {
     setOwners([...owners, ""]);
@@ -37,17 +39,23 @@ export function CreateSafe({ onSafeCreated }: CreateSafeProps) {
   };
 
   const handleCreateSafe = async () => {
-    setIsCreating(true);
-
-    try {
-      await onSafeCreated(validOwners, safeName || "New Safe");
-      navigate('/wallets');
-    } catch (error) {
-      console.error('Error creating safe:', error);
-      // Handle error (show toast, etc.)
-    } finally {
-      setIsCreating(false);
-    }
+    openModal({
+      title: "Create New Safe",
+      description: "This will deploy a new multi-signature wallet on the blockchain.",
+      details: [
+        { label: "Safe Name", value: safeName || "New Safe" },
+        { label: "Owners", value: `${validOwners.length} addresses` },
+        { label: "Threshold", value: `${threshold} of ${validOwners.length}` },
+        { label: "Network", value: "Ethereum" },
+      ],
+      estimatedGas: "~0.02 ETH",
+      networkFee: "~$50.00",
+      warningMessage: "Make sure all owner addresses are correct. This cannot be easily changed later.",
+      onConfirm: async () => {
+        await onSafeCreated(validOwners, safeName || "New Safe");
+        navigate('/wallets');
+      },
+    });
   };
 
   const validOwners = owners.filter((owner) => owner.trim() !== "");
@@ -168,20 +176,11 @@ export function CreateSafe({ onSafeCreated }: CreateSafeProps) {
               <div className="pt-4">
                 <Button
                   onClick={handleCreateSafe}
-                  disabled={!canCreate || isCreating}
+                  disabled={!canCreate}
                   className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:opacity-50"
                 >
-                  {isCreating ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                      Creating Safe...
-                    </>
-                  ) : (
-                    <>
-                      <Shield className="h-4 w-4 mr-2" />
-                      Create Safe
-                    </>
-                  )}
+                  <Shield className="h-4 w-4 mr-2" />
+                  Create Safe
                 </Button>
               </div>
             </div>
@@ -231,6 +230,19 @@ export function CreateSafe({ onSafeCreated }: CreateSafeProps) {
           </GlassCard>
         </div>
       </div>
+
+      <TransactionModal
+        isOpen={modalState.isOpen}
+        onClose={closeModal}
+        title={modalState.title}
+        description={modalState.description}
+        transactionHash={modalState.transactionHash}
+        onConfirm={modalState.onConfirm || (() => Promise.resolve())}
+        estimatedGas={modalState.estimatedGas}
+        networkFee={modalState.networkFee}
+        details={modalState.details}
+        warningMessage={modalState.warningMessage}
+      />
     </div>
   );
 }
