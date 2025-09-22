@@ -18,9 +18,12 @@ export function WalletSelection({ wallets, onSelectWallet, isLoading = false }: 
   const [filterType, setFilterType] = useState<'all' | 'active' | 'inactive'>('all');
 
   const handleSelectWallet = (wallet: SafeWallet) => {
-      console.log('Selecting wallet:', wallet);
-      onSelectWallet(wallet);
+    console.log('Selecting wallet:', wallet);
+    onSelectWallet(wallet);
+    // Add a small delay to ensure wallet is selected before navigation
+    setTimeout(() => {
       navigate('/dashboard');
+    }, 100);
   };
 
   const handleCreateNew = () => {

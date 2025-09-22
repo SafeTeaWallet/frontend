@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAccount } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import { Header } from "./components/Header";
 import { LandingPage } from "./components/LandingPage";
 import { Dashboard } from "./components/Dashboard";
@@ -47,7 +47,7 @@ export interface SafeWallet {
 }
 
 function App() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const { createWallet } = useContracts();
   const { 
     wallets, 
@@ -118,7 +118,7 @@ function App() {
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/20 via-transparent to-transparent pointer-events-none" />
 
       {/* Show header when connected and not on landing page */}
-      {isConnected && window.location.pathname !== '/' && (
+      {isConnected && address && window.location.pathname !== '/' && (
         <Header
           currentPage=""
           selectedWallet={selectedWallet}

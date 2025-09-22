@@ -53,12 +53,12 @@ export function useSafeWallets() {
   });
 
   // Get transactions for selected wallet
-  const { data: selectedWalletTransactions, refetch: refetchTransactions } = useQuery({
+  const { data: selectedWalletTransactions, refetch: refetchTransactions, isLoading: isTransactionsLoading } = useQuery({
     queryKey: ['walletTransactions', selectedWallet?.address],
-    queryFn: () => {
+    queryFn: async () => {
       if (!selectedWallet) return [];
       console.log('Fetching transactions for selected wallet:', selectedWallet.address);
-      const transactions = getWalletTransactions(selectedWallet.address);
+      const transactions = await getWalletTransactions(selectedWallet.address);
       console.log('Selected wallet transactions:', transactions);
       return transactions;
     },
@@ -124,6 +124,7 @@ export function useSafeWallets() {
     wallets: walletDetails?.length || 0,
     selectedWallet: selectedWallet?.address,
     selectedWalletTransactions: selectedWalletTransactions?.length || 0,
+    isTransactionsLoading,
     isLoading
   });
 
@@ -131,6 +132,7 @@ export function useSafeWallets() {
     wallets: walletDetails || [],
     selectedWallet,
     selectedWalletTransactions: selectedWalletTransactions || [],
+    isTransactionsLoading,
     isLoading,
     handleWalletSelect,
     refreshWalletData,

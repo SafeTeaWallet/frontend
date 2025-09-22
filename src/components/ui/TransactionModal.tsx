@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, AlertTriangle, CheckCircle, Clock, ExternalLink, Copy } from 'lucide-react';
+import { X, AlertTriangle, CheckCircle, Clock, ExternalLink, Copy, Loader } from 'lucide-react';
 import { GlassCard } from './GlassCard';
 import { Button } from './Button';
 import { useWaitForTransactionReceipt, useAccount } from 'wagmi';
@@ -32,7 +32,7 @@ export function TransactionModal({
   const { chain } = useAccount();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [step, setStep] = useState<'confirm' | 'pending' | 'success' | 'error'>('confirm');
+  const [step, setStep] = useState<'confirm' | 'waiting' | 'success' | 'error'>('confirm');
 
   const { data: receipt, isLoading: isWaitingForReceipt } = useWaitForTransactionReceipt({
     hash: transactionHash as `0x${string}`,
@@ -43,7 +43,7 @@ export function TransactionModal({
 
   useEffect(() => {
     if (transactionHash && !receipt && !isWaitingForReceipt) {
-      setStep('pending');
+      setStep('waiting');
     } else if (receipt) {
       setStep('success');
     }
@@ -54,8 +54,14 @@ export function TransactionModal({
     setError(null);
     
     try {
+      setStep('waiting');
       await onConfirm();
-      setStep('pending');
+      // After successful confirmation, wait for transaction
+      setTimeout(() => {
+        if (!transactionHash) {
+          setStep('success');
+        }
+      }, 2000);
     } catch (err: any) {
       console.error('Transaction error:', err);
       setError(err.message || 'Transaction failed');
@@ -66,9 +72,10 @@ export function TransactionModal({
   };
 
   const handleClose = () => {
-    if (step === 'pending') return; // Don't allow closing during pending
+    if (step === 'waiting') return; // Don't allow closing during waiting
     setStep('confirm');
     setError(null);
+    setIsSubmitting(false);
     onClose();
   };
 
@@ -89,7 +96,7 @@ export function TransactionModal({
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        onClick={step !== 'pending' ? handleClose : undefined}
+        onClick={step !== 'waiting' ? handleClose : undefined}
       />
       
       {/* Modal */}
@@ -98,7 +105,7 @@ export function TransactionModal({
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-light text-white">{title}</h2>
-            {step !== 'pending' && (
+            {step !== 'waiting' && (
               <button
                 onClick={handleClose}
                 className="p-2 hover:bg-white/10 rounded-lg transition-colors"
@@ -173,7 +180,7 @@ export function TransactionModal({
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                      <Loader className="animate-spin h-4 w-4 mr-2" />
                       Confirming...
                     </>
                   ) : (
@@ -184,16 +191,19 @@ export function TransactionModal({
             </>
           )}
 
-          {step === 'pending' && (
+          {step === 'waiting' && (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4" />
-              <h3 className="text-white font-medium mb-2">Transaction Pending</h3>
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-purple-400 border-t-transparent mx-auto mb-6" />
+              <h3 className="text-white font-medium text-lg mb-2">Processing Transaction</h3>
               <p className="text-gray-400 text-sm mb-4">
-                Please wait while your transaction is being processed...
+                Please wait while your transaction is being processed on the blockchain...
+              </p>
+              <p className="text-gray-500 text-xs">
+                This may take a few moments depending on network congestion
               </p>
               
               {transactionHash && (
-                <div className="p-4 rounded-lg bg-white/5 border border-white/10">
+                <div className="mt-6 p-4 rounded-lg bg-white/5 border border-white/10">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-gray-400 text-sm">Transaction Hash</span>
                     <div className="flex space-x-2">
@@ -223,10 +233,15 @@ export function TransactionModal({
 
           {step === 'success' && (
             <div className="text-center py-8">
-              <CheckCircle className="h-12 w-12 text-green-400 mx-auto mb-4" />
-              <h3 className="text-white font-medium mb-2">Transaction Successful!</h3>
+              <div className="relative mb-6">
+                <CheckCircle className="h-16 w-16 text-green-400 mx-auto" />
+                <div className="absolute inset-0 h-16 w-16 text-green-400 animate-ping opacity-20 mx-auto">
+                  <CheckCircle className="h-16 w-16" />
+                </div>
+              </div>
+              <h3 className="text-white font-medium text-lg mb-2">Transaction Successful!</h3>
               <p className="text-gray-400 text-sm mb-6">
-                Your transaction has been confirmed on the blockchain.
+                Your transaction has been confirmed and processed successfully.
               </p>
               
               {transactionHash && (
@@ -260,6 +275,7 @@ export function TransactionModal({
                 onClick={handleClose}
                 className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
               >
+                <CheckCircle className="h-4 w-4 mr-2" />
                 Close
               </Button>
             </div>
@@ -267,8 +283,8 @@ export function TransactionModal({
 
           {step === 'error' && (
             <div className="text-center py-8">
-              <X className="h-12 w-12 text-red-400 mx-auto mb-4" />
-              <h3 className="text-white font-medium mb-2">Transaction Failed</h3>
+              <X className="h-16 w-16 text-red-400 mx-auto mb-6" />
+              <h3 className="text-white font-medium text-lg mb-2">Transaction Failed</h3>
               <p className="text-gray-400 text-sm mb-6">
                 {error || 'Something went wrong with your transaction.'}
               </p>

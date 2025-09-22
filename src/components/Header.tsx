@@ -17,7 +17,7 @@ interface HeaderProps {
 export function Header({ selectedWallet }: HeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -34,7 +34,7 @@ export function Header({ selectedWallet }: HeaderProps) {
   ] as const;
 
   // Don't render header if not connected
-  if (!isConnected) {
+  if (!isConnected || !address) {
     return null;
   }
 
