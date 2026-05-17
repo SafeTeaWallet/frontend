@@ -451,7 +451,6 @@ export function TransactionPage() {
         onSuccess={() => navigate("/dashboard")}
         title={modalState.title}
         description={modalState.description}
-        transactionHash={modalState.transactionHash}
         onConfirm={modalState.onConfirm || (() => Promise.resolve())}
         estimatedGas={modalState.estimatedGas}
         networkFee={modalState.networkFee}

@@ -4,12 +4,11 @@ export interface TransactionModalState {
   isOpen: boolean;
   title: string;
   description: string;
-  transactionHash?: string;
   estimatedGas?: string;
   networkFee?: string;
   details?: Array<{ label: string; value: string }>;
   warningMessage?: string;
-  onConfirm?: () => Promise<void>;
+  onConfirm?: () => Promise<`0x${string}` | void>;
 }
 
 export function useTransactionModal() {
@@ -20,30 +19,12 @@ export function useTransactionModal() {
   });
 
   const openModal = (config: Omit<TransactionModalState, 'isOpen'>) => {
-    setModalState({
-      ...config,
-      isOpen: true,
-    });
+    setModalState({ ...config, isOpen: true });
   };
 
   const closeModal = () => {
-    setModalState(prev => ({
-      ...prev,
-      isOpen: false,
-    }));
+    setModalState(prev => ({ ...prev, isOpen: false }));
   };
 
-  const updateTransactionHash = (hash: string) => {
-    setModalState(prev => ({
-      ...prev,
-      transactionHash: hash,
-    }));
-  };
-
-  return {
-    modalState,
-    openModal,
-    closeModal,
-    updateTransactionHash,
-  };
+  return { modalState, openModal, closeModal };
 }

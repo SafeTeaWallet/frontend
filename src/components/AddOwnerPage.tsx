@@ -248,7 +248,6 @@ export function AddOwnerPage({ wallet }: AddOwnerPageProps) {
         onSuccess={() => navigate("/owners")}
         title={modalState.title}
         description={modalState.description}
-        transactionHash={modalState.transactionHash}
         onConfirm={modalState.onConfirm || (() => Promise.resolve())}
         estimatedGas={modalState.estimatedGas}
         networkFee={modalState.networkFee}

@@ -1,5 +1,5 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { createConfig, http } from 'wagmi';
+import { createConfig, http, fallback } from 'wagmi';
 import { injected } from 'wagmi/connectors';
 import { sepolia } from 'wagmi/chains';
 
@@ -13,17 +13,23 @@ if (!hasValidProjectId) {
   );
 }
 
+// Public Sepolia RPC endpoints with fallback
+const sepoliaTransport = fallback([
+  http('https://rpc.sepolia.org'),
+  http('https://ethereum-sepolia-rpc.publicnode.com'),
+  http('https://sepolia.drpc.org'),
+]);
+
 export const config = hasValidProjectId
   ? getDefaultConfig({
       appName: 'SafeTea',
       projectId,
       chains: [sepolia],
+      transports: { [sepolia.id]: sepoliaTransport },
       ssr: false,
     })
   : createConfig({
       chains: [sepolia],
       connectors: [injected()],
-      transports: {
-        [sepolia.id]: http(),
-      },
+      transports: { [sepolia.id]: sepoliaTransport },
     });

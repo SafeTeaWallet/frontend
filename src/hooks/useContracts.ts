@@ -301,7 +301,7 @@ export const ERC20_ABI = [
 
 export const SAFETEA_FACTORY_ADDRESS =
   (import.meta.env.VITE_SAFETEA_FACTORY_ADDRESS as string) ||
-  "0x45BDcD1E36f649331Cf41A2B9925D74F332b0F6F";
+  "0xff214105529499f00bd6e6f099BA471C2338ab82";
 
 // OwnerProposalType enum values matching the contract
 export const OwnerProposalType = {
@@ -358,7 +358,7 @@ export function useContracts() {
   const { address } = useAccount();
   const publicClient = usePublicClient();
   const { data: walletClient } = useWalletClient();
-  const { writeContract } = useWriteContract();
+  const { writeContractAsync } = useWriteContract();
 
   const factoryContract =
     publicClient &&
@@ -387,9 +387,9 @@ export function useContracts() {
   });
 
   // ── Write: create wallet ──────────────────────────────────────────────────
-  const createWallet = async (owners: string[]) => {
-    if (!writeContract) throw new Error("Wallet not connected");
-    return writeContract({
+  const createWallet = async (owners: string[]): Promise<`0x${string}`> => {
+    if (!writeContractAsync) throw new Error("Wallet not connected");
+    return writeContractAsync({
       address: SAFETEA_FACTORY_ADDRESS as `0x${string}`,
       abi: SAFETEA_FACTORY_ABI,
       functionName: "createWallet",
@@ -556,10 +556,10 @@ export function useContracts() {
     value: string,
     data: string = "0x",
     expiryDays: number = 7
-  ) => {
-    if (!writeContract) throw new Error("Wallet not connected");
+  ): Promise<`0x${string}`> => {
+    if (!writeContractAsync) throw new Error("Wallet not connected");
     const expiry = Math.floor(Date.now() / 1000) + expiryDays * 24 * 60 * 60;
-    return writeContract({
+    return writeContractAsync({
       address: walletAddress as `0x${string}`,
       abi: SAFETEA_WALLET_ABI,
       functionName: "submitTransaction",
@@ -579,8 +579,8 @@ export function useContracts() {
     recipient: string,
     amount: bigint,
     expiryDays: number = 7
-  ) => {
-    if (!writeContract) throw new Error("Wallet not connected");
+  ): Promise<`0x${string}`> => {
+    if (!writeContractAsync) throw new Error("Wallet not connected");
     const expiry = Math.floor(Date.now() / 1000) + expiryDays * 24 * 60 * 60;
 
     const transferData = encodeFunctionData({
@@ -589,7 +589,7 @@ export function useContracts() {
       args: [recipient as `0x${string}`, amount],
     });
 
-    return writeContract({
+    return writeContractAsync({
       address: walletAddress as `0x${string}`,
       abi: SAFETEA_WALLET_ABI,
       functionName: "submitTransaction",
@@ -603,9 +603,9 @@ export function useContracts() {
   };
 
   // ── Write: confirm transaction ────────────────────────────────────────────
-  const confirmTransaction = async (walletAddress: string, txIndex: number) => {
-    if (!writeContract) throw new Error("Wallet not connected");
-    return writeContract({
+  const confirmTransaction = async (walletAddress: string, txIndex: number): Promise<`0x${string}`> => {
+    if (!writeContractAsync) throw new Error("Wallet not connected");
+    return writeContractAsync({
       address: walletAddress as `0x${string}`,
       abi: SAFETEA_WALLET_ABI,
       functionName: "confirmTransaction",
@@ -614,9 +614,9 @@ export function useContracts() {
   };
 
   // ── Write: reject transaction ─────────────────────────────────────────────
-  const rejectTransaction = async (walletAddress: string, txIndex: number) => {
-    if (!writeContract) throw new Error("Wallet not connected");
-    return writeContract({
+  const rejectTransaction = async (walletAddress: string, txIndex: number): Promise<`0x${string}`> => {
+    if (!writeContractAsync) throw new Error("Wallet not connected");
+    return writeContractAsync({
       address: walletAddress as `0x${string}`,
       abi: SAFETEA_WALLET_ABI,
       functionName: "rejectTransaction",
@@ -625,9 +625,9 @@ export function useContracts() {
   };
 
   // ── Write: execute transaction ────────────────────────────────────────────
-  const executeTransaction = async (walletAddress: string, txIndex: number) => {
-    if (!writeContract) throw new Error("Wallet not connected");
-    return writeContract({
+  const executeTransaction = async (walletAddress: string, txIndex: number): Promise<`0x${string}`> => {
+    if (!writeContractAsync) throw new Error("Wallet not connected");
+    return writeContractAsync({
       address: walletAddress as `0x${string}`,
       abi: SAFETEA_WALLET_ABI,
       functionName: "executeTransaction",
@@ -639,12 +639,12 @@ export function useContracts() {
   const proposeOwner = async (
     walletAddress: string,
     ownerAddress: string,
-    proposalType: 0 | 1, // 0 = Add, 1 = Remove
+    proposalType: 0 | 1,
     expiryDays: number = 7
-  ) => {
-    if (!writeContract) throw new Error("Wallet not connected");
+  ): Promise<`0x${string}`> => {
+    if (!writeContractAsync) throw new Error("Wallet not connected");
     const expiry = Math.floor(Date.now() / 1000) + expiryDays * 24 * 60 * 60;
-    return writeContract({
+    return writeContractAsync({
       address: walletAddress as `0x${string}`,
       abi: SAFETEA_WALLET_ABI,
       functionName: "proposeOwner",
@@ -656,9 +656,9 @@ export function useContracts() {
   const confirmOwnerProposal = async (
     walletAddress: string,
     proposalIndex: number
-  ) => {
-    if (!writeContract) throw new Error("Wallet not connected");
-    return writeContract({
+  ): Promise<`0x${string}`> => {
+    if (!writeContractAsync) throw new Error("Wallet not connected");
+    return writeContractAsync({
       address: walletAddress as `0x${string}`,
       abi: SAFETEA_WALLET_ABI,
       functionName: "confirmOwnerProposal",
@@ -670,9 +670,9 @@ export function useContracts() {
   const rejectOwnerProposal = async (
     walletAddress: string,
     proposalIndex: number
-  ) => {
-    if (!writeContract) throw new Error("Wallet not connected");
-    return writeContract({
+  ): Promise<`0x${string}`> => {
+    if (!writeContractAsync) throw new Error("Wallet not connected");
+    return writeContractAsync({
       address: walletAddress as `0x${string}`,
       abi: SAFETEA_WALLET_ABI,
       functionName: "rejectOwnerProposal",
