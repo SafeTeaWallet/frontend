@@ -3,12 +3,8 @@ import { useAccount } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import {
   ShieldCheck,
-  Users,
-  Lock,
-  Zap,
   ArrowRight,
   Clock,
-  Vote,
   Wallet,
   Code2,
   Github as GithubIcon,
@@ -31,8 +27,8 @@ function MockWalletCard() {
         <div className="px-5 pt-5 pb-4 border-b border-white/[0.07]">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center">
-                <ShieldCheck className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center overflow-hidden">
+                <img src="/logo.png" alt="SafeTea" className="w-5 h-5 object-contain" />
               </div>
               <div>
                 <p className="text-white text-sm font-medium font-display">Team Treasury</p>
@@ -96,55 +92,6 @@ function MockWalletCard() {
   );
 }
 
-// ─── Step card ────────────────────────────────────────────────────────────────
-function Step({
-  n,
-  title,
-  desc,
-  color,
-}: {
-  n: string;
-  title: string;
-  desc: string;
-  color: string;
-}) {
-  return (
-    <div className="relative flex gap-5">
-      {/* Number */}
-      <div className="flex-shrink-0 flex flex-col items-center">
-        <div
-          className={`w-10 h-10 rounded-xl flex items-center justify-center text-white font-display font-semibold text-sm ${color}`}
-        >
-          {n}
-        </div>
-        {n !== '3' && (
-          <div className="w-px flex-1 mt-3 bg-gradient-to-b from-white/10 to-transparent" />
-        )}
-      </div>
-      <div className="pb-10">
-        <h3 className="text-white font-display font-medium text-lg mb-1">{title}</h3>
-        <p className="text-gray-400 text-sm leading-relaxed">{desc}</p>
-      </div>
-    </div>
-  );
-}
-
-// ─── Feature pill ─────────────────────────────────────────────────────────────
-function FeaturePill({
-  icon: Icon,
-  label,
-}: {
-  icon: React.ElementType;
-  label: string;
-}) {
-  return (
-    <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/[0.03] backdrop-blur-sm">
-      <Icon className="w-4 h-4 text-purple-400" />
-      <span className="text-gray-300 text-sm">{label}</span>
-    </div>
-  );
-}
-
 // ─── Main ─────────────────────────────────────────────────────────────────────
 export function LandingPage() {
   const navigate = useNavigate();
@@ -173,8 +120,8 @@ export function LandingPage() {
       {/* ── Nav ─────────────────────────────────────────────────────────── */}
       <nav className="relative z-20 flex items-center justify-between max-w-7xl mx-auto px-6 lg:px-8 pt-7 pb-4">
         <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shadow-lg shadow-purple-500/30">
-            <ShieldCheck className="w-4 h-4 text-white" />
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shadow-lg shadow-purple-500/30 overflow-hidden">
+            <img src="/logo.png" alt="SafeTea" className="w-5 h-5 object-contain" />
           </div>
           <span className="text-white font-display font-medium text-lg tracking-tight">
             Safe<span className="text-purple-400">Tea</span>
@@ -380,51 +327,149 @@ export function LandingPage() {
 
       {/* ── How it works ────────────────────────────────────────────────── */}
       <section className="border-t border-white/[0.07]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-20">
-          <div className="grid lg:grid-cols-2 gap-16 items-start">
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-24">
 
-            {/* Left: steps */}
-            <div>
-              <p className="text-purple-400 text-sm font-medium tracking-widest uppercase mb-3">
-                How it works
-              </p>
-              <h2 className="text-3xl md:text-4xl font-display font-semibold text-white mb-10">
-                Three steps to a safer wallet
+          {/* Header */}
+          <div className="mb-20">
+            <p className="text-purple-400 text-xs font-semibold tracking-[0.2em] uppercase mb-4">
+              How it works
+            </p>
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+              <h2 className="text-3xl md:text-4xl font-display font-semibold text-white leading-tight max-w-md">
+                From deploy to execution
               </h2>
+              <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
+                Three on-chain steps. No backend, no custody, no trust required.
+              </p>
+            </div>
+          </div>
 
-              <Step
-                n="1"
-                color="bg-gradient-to-br from-purple-500 to-purple-700"
-                title="Create your Safe"
-                desc="Deploy a new multi-sig wallet on-chain. Add your team's addresses as owners — the contract is yours, not ours."
-              />
-              <Step
-                n="2"
-                color="bg-gradient-to-br from-blue-500 to-blue-700"
-                title="Propose a transaction"
-                desc="Any owner can submit a transaction — ETH transfers, token sends, or arbitrary contract calls."
-              />
-              <Step
-                n="3"
-                color="bg-gradient-to-br from-teal-500 to-teal-700"
-                title="Confirm & execute"
-                desc="Once the majority of owners confirm, the transaction executes automatically. No extra step needed."
-              />
+          {/* Steps */}
+          <div className="grid lg:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
+
+            {/* Step 1 */}
+            <div className="group bg-[#0a0a0f] p-8 hover:bg-white/[0.02] transition-colors duration-300">
+              <div className="flex items-center justify-between mb-10">
+                <span className="text-[11px] font-mono text-white/20 tracking-widest">01 / 03</span>
+                <span className="text-[11px] font-mono text-purple-400/60 tracking-widest">DEPLOY</span>
+              </div>
+
+              <h3 className="text-white font-display font-medium text-xl mb-3">Deploy your Safe</h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-8">
+                Call the factory contract with your owners list. A new wallet contract is deployed on-chain — owned by no one except its signers.
+              </p>
+
+              {/* Mini visual: owner list */}
+              <div className="rounded-xl border border-white/[0.07] bg-black/40 overflow-hidden">
+                <div className="px-4 py-2.5 border-b border-white/[0.05] flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-purple-500/60" />
+                  <span className="text-[11px] font-mono text-white/30">createWallet(owners[])</span>
+                </div>
+                <div className="px-4 py-3 space-y-2">
+                  {['0x4f3a…c91b', '0xa1b2…3c4d', '0xde9f…7e2a'].map((addr, i) => (
+                    <div key={i} className="flex items-center gap-2.5">
+                      <div className={`w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold text-white ${['bg-purple-600', 'bg-blue-600', 'bg-teal-600'][i]}`}>
+                        {String.fromCharCode(65 + i)}
+                      </div>
+                      <span className="text-[11px] font-mono text-gray-500">{addr}</span>
+                      <span className="ml-auto text-[10px] text-white/20">owner</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-4 py-2.5 border-t border-white/[0.05] flex items-center justify-between">
+                  <span className="text-[10px] font-mono text-white/20">threshold</span>
+                  <span className="text-[11px] font-mono text-purple-400">2 / 3</span>
+                </div>
+              </div>
             </div>
 
-            {/* Right: feature pills stacked */}
-            <div className="flex flex-col gap-3 pt-2 lg:pt-16">
-              {[
-                { icon: ShieldCheck, label: 'Majority threshold enforced on-chain' },
-                { icon: Lock,        label: 'No admin keys or upgrade proxies' },
-                { icon: Vote,        label: 'Owner changes require consensus' },
-                { icon: Clock,       label: 'Automatic expiry after 30 days' },
-                { icon: Zap,         label: 'Executes automatically on threshold' },
-                { icon: Users,       label: 'Unlimited owners per Safe' },
-              ].map((p) => (
-                <FeaturePill key={p.label} icon={p.icon} label={p.label} />
-              ))}
+            {/* Step 2 */}
+            <div className="group bg-[#0a0a0f] p-8 hover:bg-white/[0.02] transition-colors duration-300">
+              <div className="flex items-center justify-between mb-10">
+                <span className="text-[11px] font-mono text-white/20 tracking-widest">02 / 03</span>
+                <span className="text-[11px] font-mono text-blue-400/60 tracking-widest">PROPOSE</span>
+              </div>
+
+              <h3 className="text-white font-display font-medium text-xl mb-3">Propose a transaction</h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-8">
+                Any owner submits a transaction — ETH transfer, token send, or arbitrary calldata. It enters the queue with an expiry timestamp.
+              </p>
+
+              {/* Mini visual: pending tx */}
+              <div className="rounded-xl border border-white/[0.07] bg-black/40 overflow-hidden">
+                <div className="px-4 py-2.5 border-b border-white/[0.05] flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-yellow-500/60" />
+                  <span className="text-[11px] font-mono text-white/30">tx #4 · pending</span>
+                </div>
+                <div className="px-4 py-3 space-y-2.5">
+                  <div className="flex justify-between">
+                    <span className="text-[11px] font-mono text-white/30">to</span>
+                    <span className="text-[11px] font-mono text-gray-400">0xa1b2…3c4d</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[11px] font-mono text-white/30">value</span>
+                    <span className="text-[11px] font-mono text-white">2.5 ETH</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[11px] font-mono text-white/30">data</span>
+                    <span className="text-[11px] font-mono text-gray-600">0x</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[11px] font-mono text-white/30">expires</span>
+                    <span className="text-[11px] font-mono text-orange-400/80">30d</span>
+                  </div>
+                </div>
+                <div className="px-4 py-2.5 border-t border-white/[0.05] flex items-center justify-between">
+                  <span className="text-[10px] font-mono text-white/20">confirmations</span>
+                  <span className="text-[11px] font-mono text-yellow-400">1 / 2</span>
+                </div>
+              </div>
             </div>
+
+            {/* Step 3 */}
+            <div className="group bg-[#0a0a0f] p-8 hover:bg-white/[0.02] transition-colors duration-300">
+              <div className="flex items-center justify-between mb-10">
+                <span className="text-[11px] font-mono text-white/20 tracking-widest">03 / 03</span>
+                <span className="text-[11px] font-mono text-teal-400/60 tracking-widest">EXECUTE</span>
+              </div>
+
+              <h3 className="text-white font-display font-medium text-xl mb-3">Confirm & execute</h3>
+              <p className="text-gray-500 text-sm leading-relaxed mb-8">
+                Once the majority threshold is reached, the transaction executes on-chain automatically. No extra call, no relayer — the contract handles it.
+              </p>
+
+              {/* Mini visual: execution receipt */}
+              <div className="rounded-xl border border-white/[0.07] bg-black/40 overflow-hidden">
+                <div className="px-4 py-2.5 border-b border-white/[0.05] flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-green-500/80 animate-pulse" />
+                  <span className="text-[11px] font-mono text-white/30">tx #4 · executed</span>
+                </div>
+                <div className="px-4 py-3 space-y-2.5">
+                  <div className="flex justify-between">
+                    <span className="text-[11px] font-mono text-white/30">confirmations</span>
+                    <span className="text-[11px] font-mono text-green-400">2 / 2 ✓</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[11px] font-mono text-white/30">block</span>
+                    <span className="text-[11px] font-mono text-gray-400">#21,847,302</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[11px] font-mono text-white/30">gas used</span>
+                    <span className="text-[11px] font-mono text-gray-400">48,291</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[11px] font-mono text-white/30">status</span>
+                    <span className="text-[11px] font-mono text-green-400">success</span>
+                  </div>
+                </div>
+                <div className="px-4 py-2.5 border-t border-white/[0.05]">
+                  <div className="w-full h-1 rounded-full bg-white/[0.05] overflow-hidden">
+                    <div className="h-full w-full bg-gradient-to-r from-teal-500 to-green-500 rounded-full" />
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -483,8 +528,8 @@ export function LandingPage() {
       <footer className="border-t border-white/[0.07]">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center">
-              <ShieldCheck className="w-3 h-3 text-white" />
+            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center overflow-hidden">
+              <img src="/logo.png" alt="SafeTea" className="w-4 h-4 object-contain" />
             </div>
             <span className="text-gray-500 text-sm font-display">
               Safe<span className="text-purple-500">Tea</span>

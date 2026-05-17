@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Plus, Users, Clock, Copy, ArrowRight, Search } from 'lucide-react';
+import { Plus, Users, Clock, Copy, ArrowRight, Search } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
@@ -48,10 +48,7 @@ export function WalletSelection({ wallets, onSelectWallet, isLoading = false }: 
         {/* Header */}
         <div className="text-center mb-12">
           <div className="flex items-center justify-center mb-6">
-            <div className="relative">
-              <Shield className="h-16 w-16 text-purple-400" />
-              <div className="absolute inset-0 h-16 w-16 text-purple-400 animate-pulse opacity-50" />
-            </div>
+            <img src="/logo.png" alt="SafeTea" className="h-16 w-16 object-contain" />
           </div>
           
           <h1 className="text-4xl md:text-5xl font-display font-light text-white mb-4">
@@ -150,8 +147,8 @@ export function WalletSelection({ wallets, onSelectWallet, isLoading = false }: 
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center">
-                    <Shield className="h-6 w-6 text-white" />
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                    <img src="/logo.png" alt="SafeTea" className="w-8 h-8 object-contain" />
                   </div>
                   <div>
                     <h3 className="text-white font-medium text-lg group-hover:text-purple-400 transition-colors">

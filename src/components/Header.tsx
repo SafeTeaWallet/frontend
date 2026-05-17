@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Shield, Menu, Copy, CheckCircle, ChevronDown } from 'lucide-react';
+import { Menu, Copy, CheckCircle, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount } from 'wagmi';
@@ -44,11 +44,8 @@ export function Header({ selectedWallet }: HeaderProps) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="flex items-center space-x-3">
-              <div className="relative">
-                <Shield className="h-8 w-8 text-purple-400" />
-                <div className="absolute inset-0 h-8 w-8 text-purple-400 animate-pulse opacity-50" />
-              </div>
+            <div className="flex items-center space-x-3 cursor-pointer" onClick={() => navigate('/')}>
+              <img src="/logo.png" alt="SafeTea" className="h-8 w-8 object-contain" />
               <h1 className="text-xl font-display font-light text-white tracking-wide">
                 Safe<span className="text-purple-400">Tea</span>
               </h1>
@@ -151,8 +148,8 @@ export function Header({ selectedWallet }: HeaderProps) {
                               className="flex items-center space-x-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors"
                             >
                               <div className="flex items-center space-x-2">
-                                <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center">
-                                  <Shield className="h-4 w-4 text-white" />
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                                  <img src="/logo.png" alt="SafeTea" className="w-5 h-5 object-contain" />
                                 </div>
                                 <div className="text-left">
                                   <p className="text-white text-sm font-medium">{account.displayName}</p>
@@ -289,8 +286,8 @@ export function Header({ selectedWallet }: HeaderProps) {
                               }}
                               className="flex items-center space-x-3 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
                             >
-                              <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center">
-                                <Shield className="h-4 w-4 text-white" />
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                                <img src="/logo.png" alt="SafeTea" className="w-5 h-5 object-contain" />
                               </div>
                               <div className="flex-1 text-left">
                                 <p className="text-white text-sm font-medium">{account.displayName}</p>
