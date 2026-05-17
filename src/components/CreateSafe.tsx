@@ -77,7 +77,7 @@ export function CreateSafe({ onSafeCreated }: CreateSafeProps) {
           Back to Wallet Selection
         </Button>
 
-        <h1 className="text-3xl font-light text-white mb-2">Create New Safe</h1>
+        <h1 className="text-3xl font-display font-light text-white mb-2">Create New Safe</h1>
         <p className="text-gray-400">
           Set up a new multi-signature wallet with your team
         </p>

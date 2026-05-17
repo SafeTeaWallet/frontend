@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { useBalance } from 'wagmi';
 import { Copy, Plus, Users, Eye, Clock, CheckCircle, XCircle, ArrowRight, Coins, RefreshCw } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
@@ -34,6 +35,8 @@ export function Dashboard({
     refreshWalletData,
     isTransactionsLoading
   } = useSafeWallets();
+
+  console.log("Selected Wallet Transactions", selectedWalletTransactions);
 
   // Wait for transactions to load and format them
   const recentTransactions = React.useMemo(() => {
@@ -82,13 +85,11 @@ export function Dashboard({
 
   const calculateTotalValue = () => {
     const ethBalance = balance ? parseFloat(balance.value.toString()) / 1e18 : parseFloat(wallet.ethBalance);
-    const ethValue = ethBalance * 2500; // Assuming ETH price
+    const ethValue = ethBalance * 2500; // Approximate ETH price — replace with live feed for production
     const tokenValue = tokens.reduce((total, token) => {
-      const balance = parseFloat(token.balance.replace(/,/g, ''));
-      // Simplified token pricing - in real app, fetch from price API
-      const price = token.symbol === 'USDC' || token.symbol === 'USDT' ? 1 : 
-                   token.symbol === 'DAI' ? 1 : 100;
-      return total + (balance * price);
+      const bal = parseFloat(token.balance.replace(/,/g, ''));
+      const price = token.symbol === 'USDC' || token.symbol === 'USDT' || token.symbol === 'DAI' ? 1 : 0;
+      return total + (bal * price);
     }, 0);
     return (ethValue + tokenValue).toLocaleString();
   };
@@ -100,7 +101,7 @@ export function Dashboard({
         <div className="mb-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-3xl font-light text-white mb-2">{wallet.name}</h1>
+              <h1 className="text-3xl font-display font-light text-white mb-2">{wallet.name}</h1>
               <p className="text-gray-400">Multi-signature wallet dashboard</p>
             </div>
             <div className="flex space-x-2">

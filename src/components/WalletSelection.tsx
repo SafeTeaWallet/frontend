@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Plus, Users, Clock, CheckCircle, Copy, ArrowRight, Search, Filter } from 'lucide-react';
+import { Shield, Plus, Users, Clock, Copy, ArrowRight, Search } from 'lucide-react';
 import { GlassCard } from './ui/GlassCard';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
@@ -15,7 +15,7 @@ interface WalletSelectionProps {
 export function WalletSelection({ wallets, onSelectWallet, isLoading = false }: WalletSelectionProps) {
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState<'all' | 'active' | 'inactive'>('all');
+  const [filterType, setFilterType] = useState<'all' | 'pending' | 'idle'>('all');
 
   const handleSelectWallet = (wallet: SafeWallet) => {
     console.log('Selecting wallet:', wallet);
@@ -34,8 +34,8 @@ export function WalletSelection({ wallets, onSelectWallet, isLoading = false }: 
     const matchesSearch = wallet.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          wallet.address.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter = filterType === 'all' || 
-                         (filterType === 'active' && wallet.pendingTransactions > 0) ||
-                         (filterType === 'inactive' && wallet.pendingTransactions === 0);
+                         (filterType === 'pending' && wallet.pendingTransactions > 0) ||
+                         (filterType === 'idle' && wallet.pendingTransactions === 0);
     return matchesSearch && matchesFilter;
   });
 
@@ -54,7 +54,7 @@ export function WalletSelection({ wallets, onSelectWallet, isLoading = false }: 
             </div>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-light text-white mb-4">
+          <h1 className="text-4xl md:text-5xl font-display font-light text-white mb-4">
             Your Safe<span className="text-purple-400">Tea</span> Wallets
           </h1>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
@@ -91,7 +91,7 @@ export function WalletSelection({ wallets, onSelectWallet, isLoading = false }: 
           <GlassCard className="p-6">
             <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
               <div className="flex flex-wrap gap-2">
-                {(['all', 'active', 'inactive'] as const).map((filter) => (
+                {(['all', 'pending', 'idle'] as const).map((filter) => (
                   <button
                     key={filter}
                     onClick={() => setFilterType(filter)}
@@ -101,9 +101,9 @@ export function WalletSelection({ wallets, onSelectWallet, isLoading = false }: 
                         : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 border border-white/10'
                     }`}
                   >
-                    {filter.charAt(0).toUpperCase() + filter.slice(1)}
-                    {filter === 'active' && ` (${wallets.filter(w => w.pendingTransactions > 0).length})`}
-                    {filter === 'inactive' && ` (${wallets.filter(w => w.pendingTransactions === 0).length})`}
+                    {filter === 'all' ? 'All' : filter === 'pending' ? 'Has Pending' : 'No Pending'}
+                    {filter === 'pending' && ` (${wallets.filter(w => w.pendingTransactions > 0).length})`}
+                    {filter === 'idle' && ` (${wallets.filter(w => w.pendingTransactions === 0).length})`}
                     {filter === 'all' && ` (${wallets.length})`}
                   </button>
                 ))}

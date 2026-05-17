@@ -23,7 +23,7 @@ export function useSafeWallets() {
           console.log('Wallet data for', address, ':', walletData);
 
           const transactions = await getWalletTransactions(address);
-          console.log('Transactions for', address, ':', transactions);
+          console.log('Transactions ', transactions);
           
           const pendingTransactions = transactions.filter(
             tx => !tx.executed && !tx.canceled
@@ -59,7 +59,7 @@ export function useSafeWallets() {
       if (!selectedWallet) return [];
       console.log('Fetching transactions for selected wallet:', selectedWallet.address);
       const transactions = await getWalletTransactions(selectedWallet.address);
-      console.log('Selected wallet transactions:', transactions);
+      console.log('Selected wallet transactions (queryFn):', transactions);
       return transactions;
     },
     enabled: !!selectedWallet,

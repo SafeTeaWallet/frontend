@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { Routes, Route, Navigate } from "react-router-dom";
-import { useAccount, useConnect } from "wagmi";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useAccount } from "wagmi";
 import { Header } from "./components/Header";
 import { LandingPage } from "./components/LandingPage";
 import { Dashboard } from "./components/Dashboard";
@@ -46,17 +46,18 @@ export interface SafeWallet {
   isActive: boolean;
 }
 
-function App() {
+function AppRoutes() {
+  const location = useLocation();
   const { isConnected, address } = useAccount();
   const { createWallet } = useContracts();
-  const { 
-    wallets, 
-    selectedWallet, 
-    handleWalletSelect, 
+  const {
+    wallets,
+    selectedWallet,
+    handleWalletSelect,
     refreshWalletData,
-    isLoading 
+    isLoading,
   } = useSafeWallets();
-  
+
   const [pendingTransaction, setPendingTransaction] =
     useState<TransactionData | null>(null);
 
@@ -66,59 +67,63 @@ function App() {
       symbol: "USDC",
       name: "USD Coin",
       decimals: 6,
-      balance: "0.00", // This will be updated by TokenBalanceCard
-      logoURI: "https://upload.wikimedia.org/wikipedia/commons/4/49/USDC_Logo.png",
+      balance: "0.00",
+      logoURI:
+        "https://upload.wikimedia.org/wikipedia/commons/4/49/USDC_Logo.png",
     },
     {
       address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
       symbol: "USDT",
       name: "Tether USD",
       decimals: 6,
-      balance: "0.00", // This will be updated by TokenBalanceCard
-      logoURI: "https://upload.wikimedia.org/wikipedia/commons/0/01/USDT_Logo.png",
+      balance: "0.00",
+      logoURI:
+        "https://upload.wikimedia.org/wikipedia/commons/0/01/USDT_Logo.png",
     },
     {
       address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
       symbol: "DAI",
       name: "Dai Stablecoin",
       decimals: 18,
-      balance: "0.00", // This will be updated by TokenBalanceCard
-      logoURI: "https://images.seeklogo.com/logo-png/39/1/dai-dai-logo-png_seeklogo-398219.png",
+      balance: "0.00",
+      logoURI:
+        "https://images.seeklogo.com/logo-png/39/1/dai-dai-logo-png_seeklogo-398219.png",
     },
   ]);
 
   const handleSafeCreated = async (owners: string[], _safeName: string) => {
     try {
       await createWallet(owners);
-      // Refresh wallet data after creation
       setTimeout(() => {
         refreshWalletData();
-      }, 2000); // Wait for blockchain confirmation
+      }, 2000);
     } catch (error) {
-      console.error('Error creating safe:', error);
+      console.error("Error creating safe:", error);
       throw error;
     }
   };
 
-  const handleSubmitTransaction = (transactionData: TransactionData) => {
-    setPendingTransaction(transactionData);
-  };
-
   const handleConfirmTransaction = () => {
     setPendingTransaction(null);
-    refreshWalletData(); // Refresh data after transaction
+    refreshWalletData();
   };
 
   const handleAddToken = (token: Token) => {
-    setTokens((prev) => [...prev, token]);
+    setTokens((prev) => {
+      if (prev.find((t) => t.address.toLowerCase() === token.address.toLowerCase())) {
+        return prev;
+      }
+      return [...prev, token];
+    });
   };
 
+  const showHeader = isConnected && address && location.pathname !== "/";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-800">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-black to-gray-900">
       <div className="fixed inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/20 via-transparent to-transparent pointer-events-none" />
 
-      {/* Show header when connected and not on landing page */}
-      {isConnected && address && window.location.pathname !== '/' && (
+      {showHeader && (
         <Header
           currentPage=""
           selectedWallet={selectedWallet}
@@ -129,10 +134,8 @@ function App() {
 
       <main className="relative z-10">
         <Routes>
-          {/* Landing Page */}
           <Route path="/" element={<LandingPage />} />
 
-          {/* Wallet Selection */}
           <Route
             path="/wallets"
             element={
@@ -144,13 +147,11 @@ function App() {
             }
           />
 
-          {/* Create Safe */}
           <Route
             path="/create-safe"
             element={<CreateSafe onSafeCreated={handleSafeCreated} />}
           />
 
-          {/* Dashboard */}
           <Route
             path="/dashboard"
             element={
@@ -162,7 +163,6 @@ function App() {
             }
           />
 
-          {/* Submit Transaction */}
           <Route
             path="/submit-transaction"
             element={
@@ -170,7 +170,6 @@ function App() {
                 <SubmitTransactionPage
                   wallet={selectedWallet}
                   tokens={tokens}
-                  onSubmit={handleSubmitTransaction}
                   onAddToken={handleAddToken}
                 />
               ) : (
@@ -179,7 +178,6 @@ function App() {
             }
           />
 
-          {/* Confirm Transaction */}
           <Route
             path="/confirm-transaction"
             element={
@@ -194,13 +192,9 @@ function App() {
             }
           />
 
-          {/* Transaction Details */}
           <Route path="/transaction/:txId" element={<TransactionPage />} />
-
-          {/* All Transactions */}
           <Route path="/transactions" element={<AllTransactionsPage />} />
 
-          {/* Owner Management */}
           <Route
             path="/owners"
             element={
@@ -212,7 +206,6 @@ function App() {
             }
           />
 
-          {/* Add Owner */}
           <Route
             path="/add-owner"
             element={
@@ -224,13 +217,11 @@ function App() {
             }
           />
 
-          {/* Import Token */}
           <Route
             path="/import-token"
             element={<ImportTokenPage onImport={handleAddToken} />}
           />
 
-          {/* Catch all - redirect to appropriate page */}
           <Route
             path="*"
             element={
@@ -250,6 +241,10 @@ function App() {
       </main>
     </div>
   );
+}
+
+function App() {
+  return <AppRoutes />;
 }
 
 export default App;

@@ -49,7 +49,7 @@ export function Header({ selectedWallet }: HeaderProps) {
                 <Shield className="h-8 w-8 text-purple-400" />
                 <div className="absolute inset-0 h-8 w-8 text-purple-400 animate-pulse opacity-50" />
               </div>
-              <h1 className="text-xl font-light text-white tracking-wide">
+              <h1 className="text-xl font-display font-light text-white tracking-wide">
                 Safe<span className="text-purple-400">Tea</span>
               </h1>
             </div>

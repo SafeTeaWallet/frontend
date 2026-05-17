@@ -1,9 +1,33 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
-import { mainnet, sepolia } from 'wagmi/chains';
+import { createConfig, http } from 'wagmi';
+import { injected } from 'wagmi/connectors';
+import { mainnet, sepolia, anvil } from 'wagmi/chains';
 
-export const config = getDefaultConfig({
-  appName: 'SafeTea Wallet',
-  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '2f5a2b1c8d3e4f5a6b7c8d9e0f1a2b3c',
-  chains: [mainnet, sepolia],
-  ssr: false,
-});
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
+const hasValidProjectId = projectId && projectId !== 'your_project_id_here';
+
+if (!hasValidProjectId) {
+  console.warn(
+    '[SafeTea] No valid VITE_WALLETCONNECT_PROJECT_ID found. ' +
+    'Running with injected wallet only. Get a free ID at https://cloud.walletconnect.com/'
+  );
+}
+
+// Use full RainbowKit config when a real WalletConnect project ID is available,
+// otherwise fall back to injected-only to avoid hanging on init.
+export const config = hasValidProjectId
+  ? getDefaultConfig({
+      appName: 'SafeTea Wallet',
+      projectId,
+      chains: [mainnet, sepolia, anvil],
+      ssr: false,
+    })
+  : createConfig({
+      chains: [mainnet, sepolia, anvil],
+      connectors: [injected()],
+      transports: {
+        [mainnet.id]: http(),
+        [sepolia.id]: http(),
+        [anvil.id]: http(),
+      },
+    });

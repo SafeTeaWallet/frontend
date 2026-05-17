@@ -68,7 +68,7 @@ export function AllTransactionsPage() {
           Back to Dashboard
         </Button>
         
-        <h1 className="text-3xl font-light text-white mb-2">All Transactions</h1>
+        <h1 className="text-3xl font-display font-light text-white mb-2">All Transactions</h1>
         <p className="text-gray-400">Complete history of all SafeTea wallet transactions</p>
       </div>
 
