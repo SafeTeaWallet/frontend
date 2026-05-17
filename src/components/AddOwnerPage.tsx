@@ -56,7 +56,6 @@ export function AddOwnerPage({ wallet }: AddOwnerPageProps) {
           ownerAddress,
           OwnerProposalType.Add
         );
-        navigate("/owners");
       },
     });
   };
@@ -246,6 +245,7 @@ export function AddOwnerPage({ wallet }: AddOwnerPageProps) {
       <TransactionModal
         isOpen={modalState.isOpen}
         onClose={closeModal}
+        onSuccess={() => navigate("/owners")}
         title={modalState.title}
         description={modalState.description}
         transactionHash={modalState.transactionHash}

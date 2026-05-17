@@ -7,6 +7,7 @@ import { useWaitForTransactionReceipt, useAccount } from 'wagmi';
 export interface TransactionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onSuccess?: () => void;
   title: string;
   description: string;
   transactionHash?: string;
@@ -20,6 +21,7 @@ export interface TransactionModalProps {
 export function TransactionModal({
   isOpen,
   onClose,
+  onSuccess,
   title,
   description,
   transactionHash,
@@ -272,7 +274,7 @@ export function TransactionModal({
               )}
 
               <Button
-                onClick={handleClose}
+                onClick={() => { handleClose(); onSuccess?.(); }}
                 className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />

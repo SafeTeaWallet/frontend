@@ -145,7 +145,6 @@ export function TransactionPage() {
       onConfirm: async () => {
         await confirmTransaction(selectedWallet.address, transaction.index);
         refreshWalletData();
-        navigate("/dashboard");
       },
     });
   };
@@ -173,7 +172,6 @@ export function TransactionPage() {
       onConfirm: async () => {
         await rejectTransaction(selectedWallet.address, transaction.index);
         refreshWalletData();
-        navigate("/dashboard");
       },
     });
   };
@@ -199,7 +197,6 @@ export function TransactionPage() {
       onConfirm: async () => {
         await executeTransaction(selectedWallet.address, transaction.index);
         refreshWalletData();
-        navigate("/dashboard");
       },
     });
   };
@@ -451,6 +448,7 @@ export function TransactionPage() {
       <TransactionModal
         isOpen={modalState.isOpen}
         onClose={closeModal}
+        onSuccess={() => navigate("/dashboard")}
         title={modalState.title}
         description={modalState.description}
         transactionHash={modalState.transactionHash}

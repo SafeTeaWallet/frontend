@@ -130,7 +130,6 @@ export function SubmitTransactionPage({
             rawAmount
           );
         }
-        navigate("/dashboard");
       },
     });
   };
@@ -393,6 +392,7 @@ export function SubmitTransactionPage({
       <TransactionModal
         isOpen={modalState.isOpen}
         onClose={closeModal}
+        onSuccess={() => navigate("/dashboard")}
         title={modalState.title}
         description={modalState.description}
         transactionHash={modalState.transactionHash}

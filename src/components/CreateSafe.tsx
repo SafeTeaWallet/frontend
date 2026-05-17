@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, ArrowLeft, Shield } from "lucide-react";
 import { GlassCard } from "./ui/GlassCard";
@@ -6,7 +6,6 @@ import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { TransactionModal } from "./ui/TransactionModal";
 import { useTransactionModal } from "../hooks/useTransactionModal";
-import { SafeWallet } from "../App";
 
 interface CreateSafeProps {
   onSafeCreated: (owners: string[], safeName: string) => Promise<void>;
@@ -14,7 +13,7 @@ interface CreateSafeProps {
 
 export function CreateSafe({ onSafeCreated }: CreateSafeProps) {
   const navigate = useNavigate();
-  const { modalState, openModal, closeModal, updateTransactionHash } = useTransactionModal();
+  const { modalState, openModal, closeModal } = useTransactionModal();
   const [safeName, setSafeName] = useState("");
   const [owners, setOwners] = useState<string[]>([""]);
   const [threshold, setThreshold] = useState(1);
@@ -53,7 +52,6 @@ export function CreateSafe({ onSafeCreated }: CreateSafeProps) {
       warningMessage: "Make sure all owner addresses are correct. This cannot be easily changed later.",
       onConfirm: async () => {
         await onSafeCreated(validOwners, safeName || "New Safe");
-        navigate('/wallets');
       },
     });
   };
@@ -234,6 +232,7 @@ export function CreateSafe({ onSafeCreated }: CreateSafeProps) {
       <TransactionModal
         isOpen={modalState.isOpen}
         onClose={closeModal}
+        onSuccess={() => navigate('/wallets')}
         title={modalState.title}
         description={modalState.description}
         transactionHash={modalState.transactionHash}

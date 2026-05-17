@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { useAccount } from "wagmi";
+import React from "react";
 import { Header } from "./components/Header";
 import { LandingPage } from "./components/LandingPage";
 import { Dashboard } from "./components/Dashboard";
@@ -44,6 +45,12 @@ export interface SafeWallet {
   pendingTransactions: number;
   createdDate: string;
   isActive: boolean;
+}
+
+function RequireWallet({ children }: { children: React.ReactNode }) {
+  const { isConnected } = useAccount();
+  if (!isConnected) return <Navigate to="/" replace />;
+  return <>{children}</>;
 }
 
 function AppRoutes() {
@@ -139,87 +146,109 @@ function AppRoutes() {
           <Route
             path="/wallets"
             element={
-              <WalletSelection
-                wallets={wallets}
-                onSelectWallet={handleWalletSelect}
-                isLoading={isLoading}
-              />
+              <RequireWallet>
+                <WalletSelection
+                  wallets={wallets}
+                  onSelectWallet={handleWalletSelect}
+                  isLoading={isLoading}
+                />
+              </RequireWallet>
             }
           />
 
           <Route
             path="/create-safe"
-            element={<CreateSafe onSafeCreated={handleSafeCreated} />}
+            element={
+              <RequireWallet>
+                <CreateSafe onSafeCreated={handleSafeCreated} />
+              </RequireWallet>
+            }
           />
 
           <Route
             path="/dashboard"
             element={
-              selectedWallet ? (
-                <Dashboard wallet={selectedWallet} tokens={tokens} />
-              ) : (
-                <Navigate to="/wallets" replace />
-              )
+              <RequireWallet>
+                {selectedWallet ? (
+                  <Dashboard wallet={selectedWallet} tokens={tokens} />
+                ) : (
+                  <Navigate to="/wallets" replace />
+                )}
+              </RequireWallet>
             }
           />
 
           <Route
             path="/submit-transaction"
             element={
-              selectedWallet ? (
-                <SubmitTransactionPage
-                  wallet={selectedWallet}
-                  tokens={tokens}
-                  onAddToken={handleAddToken}
-                />
-              ) : (
-                <Navigate to="/wallets" replace />
-              )
+              <RequireWallet>
+                {selectedWallet ? (
+                  <SubmitTransactionPage
+                    wallet={selectedWallet}
+                    tokens={tokens}
+                    onAddToken={handleAddToken}
+                  />
+                ) : (
+                  <Navigate to="/wallets" replace />
+                )}
+              </RequireWallet>
             }
           />
 
           <Route
             path="/confirm-transaction"
             element={
-              pendingTransaction ? (
-                <ConfirmTransactionPage
-                  transaction={pendingTransaction}
-                  onConfirm={handleConfirmTransaction}
-                />
-              ) : (
-                <Navigate to="/dashboard" replace />
-              )
+              <RequireWallet>
+                {pendingTransaction ? (
+                  <ConfirmTransactionPage
+                    transaction={pendingTransaction}
+                    onConfirm={handleConfirmTransaction}
+                  />
+                ) : (
+                  <Navigate to="/dashboard" replace />
+                )}
+              </RequireWallet>
             }
           />
 
-          <Route path="/transaction/:txId" element={<TransactionPage />} />
-          <Route path="/transactions" element={<AllTransactionsPage />} />
+          <Route
+            path="/transaction/:txId"
+            element={<RequireWallet><TransactionPage /></RequireWallet>}
+          />
+          <Route
+            path="/transactions"
+            element={<RequireWallet><AllTransactionsPage /></RequireWallet>}
+          />
 
           <Route
             path="/owners"
             element={
-              selectedWallet ? (
-                <OwnerManagement wallet={selectedWallet} />
-              ) : (
-                <Navigate to="/wallets" replace />
-              )
+              <RequireWallet>
+                {selectedWallet ? (
+                  <OwnerManagement wallet={selectedWallet} />
+                ) : (
+                  <Navigate to="/wallets" replace />
+                )}
+              </RequireWallet>
             }
           />
 
           <Route
             path="/add-owner"
             element={
-              selectedWallet ? (
-                <AddOwnerPage wallet={selectedWallet} />
-              ) : (
-                <Navigate to="/wallets" replace />
-              )
+              <RequireWallet>
+                {selectedWallet ? (
+                  <AddOwnerPage wallet={selectedWallet} />
+                ) : (
+                  <Navigate to="/wallets" replace />
+                )}
+              </RequireWallet>
             }
           />
 
           <Route
             path="/import-token"
-            element={<ImportTokenPage onImport={handleAddToken} />}
+            element={<RequireWallet><ImportTokenPage onImport={handleAddToken} /></RequireWallet>}
           />
 
           <Route
