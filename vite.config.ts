@@ -13,5 +13,8 @@ export default defineConfig({
     watch: {
       usePolling: true,
     },
+    headers: {
+      'Cache-Control': 'no-store',
+    }
   },
 });

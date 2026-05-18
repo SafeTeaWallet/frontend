@@ -680,6 +680,20 @@ export function useContracts() {
     });
   };
 
+  // ── Write: mark owner proposal expired ────────────────────────────────────
+  const markOwnerProposalExpired = async (
+    walletAddress: string,
+    proposalIndex: number
+  ): Promise<`0x${string}`> => {
+    if (!writeContractAsync) throw new Error("Wallet not connected");
+    return writeContractAsync({
+      address: walletAddress as `0x${string}`,
+      abi: SAFETEA_WALLET_ABI,
+      functionName: "markOwnerProposalExpired",
+      args: [BigInt(proposalIndex)],
+    });
+  };
+
   return {
     factoryContract,
     getWalletContract,
@@ -701,5 +715,6 @@ export function useContracts() {
     proposeOwner,
     confirmOwnerProposal,
     rejectOwnerProposal,
+    markOwnerProposalExpired,
   };
 }

@@ -13,11 +13,11 @@ if (!hasValidProjectId) {
   );
 }
 
-// Public Sepolia RPC endpoints with fallback
+// Public Sepolia RPC endpoints — all verified to send CORS headers for browser use
 const sepoliaTransport = fallback([
-  http('https://rpc.sepolia.org'),
+  http('https://sepolia.gateway.tenderly.co'),
+  http('https://rpc2.sepolia.org'),
   http('https://ethereum-sepolia-rpc.publicnode.com'),
-  http('https://sepolia.drpc.org'),
 ]);
 
 export const config = hasValidProjectId

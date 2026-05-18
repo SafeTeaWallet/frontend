@@ -11,7 +11,6 @@ import { AllTransactionsPage } from "./components/AllTransactionsPage";
 import { OwnerManagement } from "./components/OwnerManagement";
 import { WalletSelection } from "./components/WalletSelection";
 import { SubmitTransactionPage } from "./components/SubmitTransactionPage";
-import { AddOwnerPage } from "./components/AddOwnerPage";
 import { ImportTokenPage } from "./components/ImportTokenPage";
 import { ConfirmTransactionPage } from "./components/ConfirmTransactionPage";
 import { SafeWalletsProvider, useSafeWalletsContext } from "./contexts/SafeWalletsContext";
@@ -226,19 +225,6 @@ function AppRoutes() {
               <RequireWallet>
                 {selectedWallet ? (
                   <OwnerManagement wallet={selectedWallet} />
-                ) : (
-                  <Navigate to="/wallets" replace />
-                )}
-              </RequireWallet>
-            }
-          />
-
-          <Route
-            path="/add-owner"
-            element={
-              <RequireWallet>
-                {selectedWallet ? (
-                  <AddOwnerPage wallet={selectedWallet} />
                 ) : (
                   <Navigate to="/wallets" replace />
                 )}

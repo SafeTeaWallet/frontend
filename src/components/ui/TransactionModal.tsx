@@ -35,24 +35,29 @@ export function TransactionModal({
   const [step, setStep] = useState<Step>('confirm');
   const [txHash, setTxHash] = useState<`0x${string}` | undefined>();
   const [error, setError] = useState<string | null>(null);
+  // Track whether we're actively waiting for a receipt we submitted
+  const [waitingForReceipt, setWaitingForReceipt] = useState(false);
 
-  // Wait for the tx to be mined once we have a hash
   const { data: receipt } = useWaitForTransactionReceipt({
     hash: txHash,
-    query: { enabled: !!txHash },
+    query: { enabled: !!txHash && waitingForReceipt },
   });
 
-  // Transition to success only when the receipt arrives
+  // Only advance to success when we're actively waiting AND receipt arrives
   useEffect(() => {
-    if (receipt) setStep('success');
-  }, [receipt]);
+    if (receipt && waitingForReceipt) {
+      setWaitingForReceipt(false);
+      setStep('success');
+    }
+  }, [receipt, waitingForReceipt]);
 
-  // Reset state when modal opens
+  // Reset all state when modal opens fresh
   useEffect(() => {
     if (isOpen) {
       setStep('confirm');
       setTxHash(undefined);
       setError(null);
+      setWaitingForReceipt(false);
     }
   }, [isOpen]);
 
@@ -64,6 +69,7 @@ export function TransactionModal({
       const hash = await onConfirm(); // blocks until user approves in wallet
       if (hash) {
         setTxHash(hash);
+        setWaitingForReceipt(true);
         setStep('mining'); // tx submitted, waiting for block confirmation
       } else {
         // onConfirm didn't return a hash — treat as instant success
