@@ -2,4 +2,6 @@ allowBuilds:
   bufferutil: true
   esbuild: true
   keccak: true
+  sharp: set this to true or false
   utf-8-validate: true
+  workerd: set this to true or false
