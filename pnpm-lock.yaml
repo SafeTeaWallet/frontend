@@ -42,6 +42,9 @@ importers:
         specifier: ^2.15.6
         version: 2.19.5(@tanstack/query-core@5.100.10)(@tanstack/react-query@5.100.10(react@18.3.1))(@types/react@18.3.28)(bufferutil@4.1.0)(react@18.3.1)(typescript@5.9.3)(utf-8-validate@5.0.10)(viem@2.49.3(bufferutil@4.1.0)(typescript@5.9.3)(utf-8-validate@5.0.10)(zod@3.25.76))(zod@3.25.76)
     devDependencies:
+      '@cloudflare/vite-plugin':
+        specifier: ^1.37.1
+        version: 1.37.1(bufferutil@4.1.0)(utf-8-validate@5.0.10)(vite@8.0.13(esbuild@0.27.3)(jiti@1.21.7))(workerd@1.20260515.1)(wrangler@4.92.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))
       '@eslint/js':
         specifier: ^9.9.1
         version: 9.39.4
@@ -199,6 +202,12 @@ packages:
     peerDependenciesMeta:
       workerd:
         optional: true
+
+  '@cloudflare/vite-plugin@1.37.1':
+    resolution: {integrity: sha512-FldhsmkXyLsX3yI+p0aJDo/kGyY69pDdynz2JjcuH3eCiQ+G9XaY3CrN+UYEfCbWv8CiR2wL95lNg0fT/HfwWA==}
+    peerDependencies:
+      vite: ^6.1.0 || ^7.0.0 || ^8.0.0
+      wrangler: ^4.92.0
 
   '@cloudflare/workerd-darwin-64@1.20260515.1':
     resolution: {integrity: sha512-Wtw44el2pNbzixvTkWdfeBDTrQwQbJRz7/JUvPKV27I0pQWXbhNJPpM8cstq/pbrU5AGcA/HjFH6yPMRTIRKig==}
@@ -4056,6 +4065,19 @@ snapshots:
       unenv: 2.0.0-rc.24
     optionalDependencies:
       workerd: 1.20260515.1
+
+  '@cloudflare/vite-plugin@1.37.1(bufferutil@4.1.0)(utf-8-validate@5.0.10)(vite@8.0.13(esbuild@0.27.3)(jiti@1.21.7))(workerd@1.20260515.1)(wrangler@4.92.0(bufferutil@4.1.0)(utf-8-validate@5.0.10))':
+    dependencies:
+      '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260515.1)
+      miniflare: 4.20260515.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      unenv: 2.0.0-rc.24
+      vite: 8.0.13(esbuild@0.27.3)(jiti@1.21.7)
+      wrangler: 4.92.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+      ws: 8.18.0(bufferutil@4.1.0)(utf-8-validate@5.0.10)
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+      - workerd
 
   '@cloudflare/workerd-darwin-64@1.20260515.1':
     optional: true
