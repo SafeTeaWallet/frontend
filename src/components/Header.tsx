@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu, Copy, CheckCircle, ChevronDown } from 'lucide-react';
 import { useState } from 'react';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { ConnectKitButton } from 'connectkit';
 import { useAccount } from 'wagmi';
 import { SafeWallet } from '../App';
 
@@ -68,124 +68,66 @@ export function Header({ selectedWallet }: HeaderProps) {
               ))}
             </nav>
 
-            {/* RainbowKit Connect Button with Custom Styling */}
+            {/* ConnectKit Connect Button */}
             <div className="hidden sm:flex items-center space-x-3">
-              <ConnectButton.Custom>
-                {({
-                  account,
-                  chain,
-                  openAccountModal,
-                  openChainModal,
-                  openConnectModal,
-                  authenticationStatus,
-                  mounted,
-                }) => {
-                  const ready = mounted && authenticationStatus !== 'loading';
-                  const connected =
-                    ready &&
-                    account &&
-                    chain &&
-                    (!authenticationStatus || authenticationStatus === 'authenticated');
+              <ConnectKitButton.Custom>
+                {({ isConnected, show, address, ensName, chain }) => {
+                  if (!isConnected) {
+                    return (
+                      <button
+                        onClick={show}
+                        className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 text-white font-medium hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-purple-500/20"
+                      >
+                        Connect Wallet
+                      </button>
+                    );
+                  }
+
+                  const displayAddress = ensName ?? (address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '');
 
                   return (
-                    <div
-                      {...(!ready && {
-                        'aria-hidden': true,
-                        'style': {
-                          opacity: 0,
-                          pointerEvents: 'none',
-                          userSelect: 'none',
-                        },
-                      })}
-                    >
-                      {(() => {
-                        if (!connected) {
-                          return (
-                            <button
-                              onClick={openConnectModal}
-                              className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 text-white font-medium hover:from-purple-600 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-purple-500/20"
-                            >
-                              Connect Wallet
-                            </button>
-                          );
-                        }
-
-                        if (chain.unsupported) {
-                          return (
-                            <button
-                              onClick={openChainModal}
-                              className="px-4 py-2 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition-colors"
-                            >
-                              Wrong network
-                            </button>
-                          );
-                        }
-
-                        return (
-                          <div className="flex items-center space-x-3">
-                            {/* Chain Selector */}
-                            <button
-                              onClick={openChainModal}
-                              className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors"
-                            >
-                              {chain.hasIcon && (
-                                <div className="w-4 h-4 rounded-full overflow-hidden">
-                                  {chain.iconUrl && (
-                                    <img
-                                      alt={chain.name ?? 'Chain icon'}
-                                      src={chain.iconUrl}
-                                      className="w-4 h-4"
-                                    />
-                                  )}
-                                </div>
-                              )}
-                              <span className="text-white text-sm">{chain.name}</span>
-                            </button>
-
-                            {/* Account Button */}
-                            <button
-                              onClick={openAccountModal}
-                              className="flex items-center space-x-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors"
-                            >
-                              <div className="flex items-center space-x-2">
-                                <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center overflow-hidden">
-                                  <img src="/logo.png" alt="SafeTea" className="w-5 h-5 object-contain" />
-                                </div>
-                                <div className="text-left">
-                                  <p className="text-white text-sm font-medium">{account.displayName}</p>
-                                  <p className="text-gray-400 text-xs font-mono">
-                                    {account.address.slice(0, 6)}...{account.address.slice(-4)}
-                                  </p>
-                                </div>
-                              </div>
-                              <ChevronDown className="h-4 w-4 text-gray-400" />
-                            </button>
-
-                            {/* Copy Address Button */}
-                            <button
-                              onClick={() => copyAddress(account.address)}
-                              className="p-2 hover:bg-white/10 rounded-md transition-colors"
-                              title="Copy wallet address"
-                            >
-                              {copied ? (
-                                <CheckCircle className="h-4 w-4 text-green-400" />
-                              ) : (
-                                <Copy className="h-4 w-4 text-gray-400" />
-                              )}
-                            </button>
-
-                            {/* Status Indicator */}
-                            <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
-                              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
-                              <span className="text-green-400 text-sm">Connected</span>
-                            </div>
+                    <div className="flex items-center space-x-3">
+                      {/* Account Button */}
+                      <button
+                        onClick={show}
+                        className="flex items-center space-x-3 px-4 py-2 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors"
+                      >
+                        <div className="flex items-center space-x-2">
+                          <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                            <img src="/logo.png" alt="SafeTea" className="w-5 h-5 object-contain" />
                           </div>
-                        );
-                      })()}
+                          <div className="text-left">
+                            <p className="text-white text-sm font-medium">{displayAddress}</p>
+                            {chain && (
+                              <p className="text-gray-400 text-xs">{chain.name}</p>
+                            )}
+                          </div>
+                        </div>
+                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                      </button>
+
+                      {/* Copy Address Button */}
+                      <button
+                        onClick={() => address && copyAddress(address)}
+                        className="p-2 hover:bg-white/10 rounded-md transition-colors"
+                        title="Copy wallet address"
+                      >
+                        {copied ? (
+                          <CheckCircle className="h-4 w-4 text-green-400" />
+                        ) : (
+                          <Copy className="h-4 w-4 text-gray-400" />
+                        )}
+                      </button>
+
+                      {/* Status Indicator */}
+                      <div className="flex items-center space-x-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10">
+                        <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                        <span className="text-green-400 text-sm">Connected</span>
+                      </div>
                     </div>
                   );
                 }}
-              </ConnectButton.Custom>
+              </ConnectKitButton.Custom>
             </div>
 
             {/* Mobile Menu Button */}
@@ -219,90 +161,40 @@ export function Header({ selectedWallet }: HeaderProps) {
                 </button>
               ))}
               
-              {/* Mobile RainbowKit Connect Button */}
+              {/* Mobile ConnectKit Connect Button */}
               <div className="mt-4 pt-4 border-t border-white/10">
-                <ConnectButton.Custom>
-                  {({
-                    account,
-                    chain,
-                    openAccountModal,
-                    openChainModal,
-                    openConnectModal,
-                    authenticationStatus,
-                    mounted,
-                  }) => {
-                    const ready = mounted && authenticationStatus !== 'loading';
-                    const connected =
-                      ready &&
-                      account &&
-                      chain &&
-                      (!authenticationStatus || authenticationStatus === 'authenticated');
+                <ConnectKitButton.Custom>
+                  {({ isConnected, show, address, ensName, chain }) => {
+                    const displayAddress = ensName ?? (address ? `${address.slice(0, 6)}...${address.slice(-4)}` : '');
+
+                    if (!isConnected) {
+                      return (
+                        <button
+                          onClick={() => { show?.(); setIsMobileMenuOpen(false); }}
+                          className="w-full px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 text-white font-medium hover:from-purple-600 hover:to-purple-700 transition-all duration-200"
+                        >
+                          Connect Wallet
+                        </button>
+                      );
+                    }
 
                     return (
-                      <div
-                        {...(!ready && {
-                          'aria-hidden': true,
-                          'style': {
-                            opacity: 0,
-                            pointerEvents: 'none',
-                            userSelect: 'none',
-                          },
-                        })}
+                      <button
+                        onClick={() => { show?.(); setIsMobileMenuOpen(false); }}
+                        className="flex items-center space-x-3 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
                       >
-                        {(() => {
-                          if (!connected) {
-                            return (
-                              <button
-                                onClick={() => {
-                                  openConnectModal();
-                                  setIsMobileMenuOpen(false);
-                                }}
-                                className="w-full px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 text-white font-medium hover:from-purple-600 hover:to-purple-700 transition-all duration-200"
-                              >
-                                Connect Wallet
-                              </button>
-                            );
-                          }
-
-                          if (chain.unsupported) {
-                            return (
-                              <button
-                                onClick={() => {
-                                  openChainModal();
-                                  setIsMobileMenuOpen(false);
-                                }}
-                                className="w-full px-4 py-2 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition-colors"
-                              >
-                                Wrong network
-                              </button>
-                            );
-                          }
-
-                          return (
-                            <button
-                              onClick={() => {
-                                openAccountModal();
-                                setIsMobileMenuOpen(false);
-                              }}
-                              className="flex items-center space-x-3 w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors"
-                            >
-                              <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center overflow-hidden">
-                                <img src="/logo.png" alt="SafeTea" className="w-5 h-5 object-contain" />
-                              </div>
-                              <div className="flex-1 text-left">
-                                <p className="text-white text-sm font-medium">{account.displayName}</p>
-                                <p className="text-gray-400 text-xs font-mono">
-                                  {account.address.slice(0, 6)}...{account.address.slice(-4)}
-                                </p>
-                              </div>
-                              <ChevronDown className="h-4 w-4 text-gray-400" />
-                            </button>
-                          );
-                        })()}
-                      </div>
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center overflow-hidden">
+                          <img src="/logo.png" alt="SafeTea" className="w-5 h-5 object-contain" />
+                        </div>
+                        <div className="flex-1 text-left">
+                          <p className="text-white text-sm font-medium">{displayAddress}</p>
+                          {chain && <p className="text-gray-400 text-xs">{chain.name}</p>}
+                        </div>
+                        <ChevronDown className="h-4 w-4 text-gray-400" />
+                      </button>
                     );
                   }}
-                </ConnectButton.Custom>
+                </ConnectKitButton.Custom>
               </div>
             </div>
           </div>

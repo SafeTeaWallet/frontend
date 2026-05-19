@@ -1,16 +1,6 @@
-import { connectorsForWallets, getDefaultConfig } from '@rainbow-me/rainbowkit';
-import {
-  metaMaskWallet,
-  coinbaseWallet,
-  rainbowWallet,
-  walletConnectWallet,
-  trustWallet,
-  phantomWallet,
-  rabbyWallet,
-  injectedWallet,
-  safeWallet,
-} from '@rainbow-me/rainbowkit/wallets';
+import { getDefaultConfig } from 'connectkit';
 import { createConfig, http, fallback } from 'wagmi';
+import { injected, walletConnect } from 'wagmi/connectors';
 import { sepolia } from 'wagmi/chains';
 
 const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID;
@@ -31,48 +21,25 @@ const sepoliaTransport = fallback([
   http('https://ethereum-sepolia-rpc.publicnode.com'),
 ]);
 
-const walletGroups = () => [
-  {
-    groupName: 'Popular',
-    wallets: [
-      metaMaskWallet,
-      coinbaseWallet,
-      rainbowWallet,
-      walletConnectWallet,
-      trustWallet,
-      phantomWallet,
-      rabbyWallet,
-    ],
-  },
-  {
-    groupName: 'Other',
-    wallets: [injectedWallet, safeWallet],
-  },
-];
+const ckConfig = getDefaultConfig({
+  appName: 'SafeTea',
+  appIcon: '/logo.png',
+  appDescription: 'Non-custodial multi-sig wallet for teams and DAOs',
+  walletConnectProjectId: hasValidProjectId ? projectId : 'PLACEHOLDER',
+  chains: [sepolia],
+  transports: { [sepolia.id]: sepoliaTransport },
+  // Disable Aave/Family managed accounts (centralized option)
+  enableAaveAccount: false,
+});
 
-// When a valid project ID is present, use getDefaultConfig which handles
-// WalletConnect + all default wallets automatically.
-// When not, manually wire up connectors so browser-injected wallets still work.
-export const config = hasValidProjectId
-  ? getDefaultConfig({
-      appName: 'SafeTea',
-      projectId,
-      chains: [sepolia],
-      transports: { [sepolia.id]: sepoliaTransport },
-      ssr: false,
-    })
-  : (() => {
-      const connectors = connectorsForWallets(
-        walletGroups(),
-        {
-          appName: 'SafeTea',
-          projectId: 'PLACEHOLDER',
-        }
-      );
-
-      return createConfig({
-        chains: [sepolia],
-        connectors,
-        transports: { [sepolia.id]: sepoliaTransport },
-      });
-    })();
+// Override connectors: only injected (MetaMask, Rabby, etc.) + WalletConnect
+// This removes Coinbase Smart Wallet and other centralized options
+export const config = createConfig({
+  ...ckConfig,
+  connectors: [
+    injected(),
+    ...(hasValidProjectId
+      ? [walletConnect({ projectId, showQrModal: false })]
+      : []),
+  ],
+});

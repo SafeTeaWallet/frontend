@@ -11,10 +11,10 @@
     "deploy": "pnpm run build && wrangler deploy"
   },
   "dependencies": {
-    "@rainbow-me/rainbowkit": "^2.2.8",
     "@tanstack/react-query": "^5.81.5",
     "@walletconnect/web3wallet": "^1.16.1",
     "clsx": "^2.1.0",
+    "connectkit": "^1.9.2",
     "lucide-react": "^0.344.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",

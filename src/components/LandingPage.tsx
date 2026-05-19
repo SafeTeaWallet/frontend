@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from 'wagmi';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { ConnectKitButton } from 'connectkit';
 import {
   ShieldCheck,
   ArrowRight,
@@ -139,16 +139,16 @@ export function LandingPage() {
               <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
             </Button>
           ) : (
-            <ConnectButton.Custom>
-              {({ openConnectModal }) => (
+            <ConnectKitButton.Custom>
+              {({ show }) => (
                 <button
-                  onClick={openConnectModal}
+                  onClick={show}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white text-sm hover:bg-white/10 transition-colors"
                 >
                   Connect Wallet
                 </button>
               )}
-            </ConnectButton.Custom>
+            </ConnectKitButton.Custom>
           )}
         </div>
       </nav>
@@ -183,17 +183,17 @@ export function LandingPage() {
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               ) : (
-                <ConnectButton.Custom>
-                  {({ openConnectModal }) => (
+                <ConnectKitButton.Custom>
+                  {({ show }) => (
                     <button
-                      onClick={openConnectModal}
+                      onClick={show}
                       className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-medium text-base shadow-xl shadow-purple-500/20 transition-all"
                     >
                       Launch App
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   )}
-                </ConnectButton.Custom>
+                </ConnectKitButton.Custom>
               )}
 
               <a
@@ -507,17 +507,17 @@ export function LandingPage() {
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             ) : (
-              <ConnectButton.Custom>
-                {({ openConnectModal }) => (
+              <ConnectKitButton.Custom>
+                {({ show }) => (
                   <button
-                    onClick={openConnectModal}
+                    onClick={show}
                     className="inline-flex items-center gap-2 px-10 py-3.5 rounded-xl bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-display font-medium text-base shadow-2xl shadow-purple-500/25 transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
                     Connect Wallet
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 )}
-              </ConnectButton.Custom>
+              </ConnectKitButton.Custom>
             )}
 
             <p className="text-gray-600 text-sm mt-5">
