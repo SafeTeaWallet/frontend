@@ -74,28 +74,6 @@ export function ImportTokenPage({ onImport }: ImportTokenPageProps) {
     }
   };
 
-  const popularTokens = [
-    {
-      address: "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
-      symbol: "UNI",
-      name: "Uniswap",
-    },
-    {
-      address: "0x514910771AF9Ca656af840dff83E8264EcF986CA",
-      symbol: "LINK",
-      name: "Chainlink",
-    },
-    {
-      address: "0x7D1AfA7B718fb893dB30A3aBc0Cfc608AaCfeBB0",
-      symbol: "MATIC",
-      name: "Polygon",
-    },
-    {
-      address: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
-      symbol: "WBTC",
-      name: "Wrapped Bitcoin",
-    },
-  ];
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -196,39 +174,6 @@ export function ImportTokenPage({ onImport }: ImportTokenPageProps) {
                   </div>
                 </div>
               )}
-            </div>
-          </GlassCard>
-
-          {/* Popular Tokens */}
-          <GlassCard className="p-6">
-            <h2 className="text-xl font-display font-light text-white mb-4">
-              Popular Tokens
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {popularTokens.map((token, index) => (
-                <button
-                  key={index}
-                  onClick={() => {
-                    setContractAddress(token.address);
-                    setError("");
-                    setTokenData(null);
-                  }}
-                  className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors text-left"
-                >
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                      <span className="text-white font-bold font-display text-xs">
-                        {token.symbol.slice(0, 2)}
-                      </span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-white font-medium">{token.name}</p>
-                      <p className="text-gray-400 text-sm">{token.symbol}</p>
-                    </div>
-                    <Plus className="h-4 w-4 text-gray-400" />
-                  </div>
-                </button>
-              ))}
             </div>
           </GlassCard>
 

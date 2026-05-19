@@ -67,35 +67,7 @@ function AppRoutes() {
   const [pendingTransaction, setPendingTransaction] =
     useState<TransactionData | null>(null);
 
-  const [tokens, setTokens] = useState<Token[]>([
-    {
-      address: "0xA0b86a33E6241447b4F8A8e8F3D1f76C8C2e9C1B",
-      symbol: "USDC",
-      name: "USD Coin",
-      decimals: 6,
-      balance: "0.00",
-      logoURI:
-        "https://upload.wikimedia.org/wikipedia/commons/4/49/USDC_Logo.png",
-    },
-    {
-      address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-      symbol: "USDT",
-      name: "Tether USD",
-      decimals: 6,
-      balance: "0.00",
-      logoURI:
-        "https://upload.wikimedia.org/wikipedia/commons/0/01/USDT_Logo.png",
-    },
-    {
-      address: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      symbol: "DAI",
-      name: "Dai Stablecoin",
-      decimals: 18,
-      balance: "0.00",
-      logoURI:
-        "https://images.seeklogo.com/logo-png/39/1/dai-dai-logo-png_seeklogo-398219.png",
-    },
-  ]);
+  const [tokens, setTokens] = useState<Token[]>([]);
 
   const handleSafeCreated = async (owners: string[], _safeName: string) => {
     try {
