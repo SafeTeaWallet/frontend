@@ -101,12 +101,12 @@ export function Dashboard({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Wallet Summary */}
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-3xl font-display font-light text-white mb-2">{wallet.name}</h1>
+              <h1 className="text-2xl sm:text-3xl font-display font-light text-white mb-2">{wallet.name}</h1>
               <p className="text-gray-400">Multi-signature wallet dashboard</p>
             </div>
-            <div className="flex space-x-2">
+            <div className="flex flex-wrap gap-2">
               <Button variant="outline" onClick={refreshWalletData}>
                 <RefreshCw className="h-4 w-4 mr-2" />
                 Refresh
@@ -130,12 +130,13 @@ export function Dashboard({
                 </div>
                 
                 <div className="flex items-center space-x-3 mb-6 p-3 rounded-lg bg-white/5 border border-white/10">
-                  <div className="text-sm font-mono text-gray-300 flex-1">
-                    {wallet.address}
+                  <div className="text-sm font-mono text-gray-300 flex-1 truncate min-w-0">
+                    <span className="hidden sm:inline">{wallet.address}</span>
+                    <span className="sm:hidden">{wallet.address.slice(0, 10)}...{wallet.address.slice(-8)}</span>
                   </div>
                   <button 
                     onClick={() => navigator.clipboard.writeText(wallet.address)}
-                    className="p-1 hover:bg-white/10 rounded-md transition-colors"
+                    className="p-1 hover:bg-white/10 rounded-md transition-colors flex-shrink-0"
                   >
                     <Copy className="h-4 w-4 text-gray-400" />
                   </button>
@@ -259,15 +260,15 @@ export function Dashboard({
               </div>
             ) : recentTransactions.length > 0 ? (
               recentTransactions.map((tx) => (
-                <div
+                  <div
                   key={tx.id}
                   onClick={() => navigate(`/transaction/${tx.id}`)}
-                  className="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer"
+                  className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer"
                 >
-                  <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-4 min-w-0">
                     {getStatusIcon(tx.status)}
-                    <div>
-                      <div className="flex items-center space-x-2 mb-1">
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
                         <p className="text-white font-medium">Send {tx.value}</p>
                         <span className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full ${
                           tx.type === 'legacy' ? 'bg-blue-500/20 text-blue-400' : 'bg-green-500/20 text-green-400'
@@ -275,13 +276,13 @@ export function Dashboard({
                           {tx.type === 'legacy' ? <><EthLogo className="w-3 h-3" /> ETH</> : 'Token'}
                         </span>
                       </div>
-                      <p className="text-gray-400 text-sm font-mono">
+                      <p className="text-gray-400 text-sm font-mono truncate">
                         To: {tx.to.slice(0, 6)}...{tx.to.slice(-4)}
                       </p>
                     </div>
                   </div>
 
-                  <div className="text-right">
+                  <div className="text-right flex-shrink-0">
                     <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(tx.status)}`}>
                       {tx.status === 'pending' ? `${tx.confirmations}/${tx.required}` : tx.status}
                     </div>

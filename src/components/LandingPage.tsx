@@ -118,7 +118,7 @@ export function LandingPage() {
       </div>
 
       {/* ── Nav ─────────────────────────────────────────────────────────── */}
-      <nav className="relative z-20 flex items-center justify-between max-w-7xl mx-auto px-6 lg:px-8 pt-7 pb-4">
+      <nav className="relative z-20 flex items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-4">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center shadow-lg shadow-purple-500/30 overflow-hidden">
             <img src="/logo.png" alt="SafeTea" className="w-5 h-5 object-contain" />
@@ -154,19 +154,19 @@ export function LandingPage() {
       </nav>
 
       {/* ── Hero ────────────────────────────────────────────────────────── */}
-      <section className="relative max-w-7xl mx-auto px-6 lg:px-8 pt-16 pb-24 lg:pt-24 lg:pb-32">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16 sm:pt-16 sm:pb-24 lg:pt-24 lg:pb-32">
+        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
 
           {/* Left: copy */}
           <div>
-            <h1 className="text-5xl lg:text-6xl xl:text-7xl font-display font-semibold text-white leading-[1.05] tracking-tight mb-6">
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-display font-semibold text-white leading-[1.05] tracking-tight mb-5 sm:mb-6">
               Secure assets,{' '}
               <span className="bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent">
                 together.
               </span>
             </h1>
 
-            <p className="text-gray-400 text-lg leading-relaxed mb-10 max-w-lg">
+            <p className="text-gray-400 text-base sm:text-lg leading-relaxed mb-8 sm:mb-10 max-w-lg">
               SafeTea is a non-custodial multi-sig wallet built for teams, DAOs, and
               organizations. Every transaction requires consensus — no single point of failure.
             </p>
@@ -208,7 +208,10 @@ export function LandingPage() {
             </div>
           </div>
 
-          {/* Right: mock wallet */}
+          {/* Right: mock wallet — visible on lg+, also shown below hero on mobile */}
+          <div className="block lg:hidden mt-4">
+            <MockWalletCard />
+          </div>
           <div className="hidden lg:block">
             <MockWalletCard />
           </div>
@@ -217,8 +220,8 @@ export function LandingPage() {
 
       {/* ── Stats bar ───────────────────────────────────────────────────── */}
       <section className="border-y border-white/[0.07] bg-white/[0.01]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-10">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
             {[
               { icon: Code2,      value: 'Solidity',   label: 'Smart Contracts' },
               { icon: ShieldCheck, value: 'Foundry',   label: 'Tested & Verified' },
@@ -238,7 +241,7 @@ export function LandingPage() {
       </section>
 
       {/* ── Features ────────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-6 lg:px-8 py-24">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
         <div className="mb-16">
           <p className="text-purple-400 text-xs font-semibold tracking-[0.2em] uppercase mb-4">
             Why SafeTea
@@ -254,7 +257,7 @@ export function LandingPage() {
         </div>
 
         {/* Top row: 3 wide cards */}
-        <div className="grid md:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden mb-px">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden mb-px">
           {[
             {
               num: '01',
@@ -293,7 +296,7 @@ export function LandingPage() {
         </div>
 
         {/* Bottom row: 2 wide cards */}
-        <div className="grid md:grid-cols-2 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
           {[
             {
               num: '04',
@@ -327,7 +330,7 @@ export function LandingPage() {
 
       {/* ── How it works ────────────────────────────────────────────────── */}
       <section className="border-t border-white/[0.07]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
 
           {/* Header */}
           <div className="mb-20">
@@ -345,7 +348,7 @@ export function LandingPage() {
           </div>
 
           {/* Steps */}
-          <div className="grid lg:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-white/[0.06] rounded-2xl overflow-hidden">
 
             {/* Step 1 */}
             <div className="group bg-[#0a0a0f] p-8 hover:bg-white/[0.02] transition-colors duration-300">
@@ -475,22 +478,22 @@ export function LandingPage() {
       </section>
 
       {/* ── CTA ─────────────────────────────────────────────────────────── */}
-      <section className="border-t border-white/[0.07]">
-        <div className="max-w-3xl mx-auto px-6 lg:px-8 py-24 text-center">
+      <section className="relative border-t border-white/[0.07]">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
           {/* Glow */}
-          <div className="absolute left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-purple-700/20 blur-[80px] rounded-full pointer-events-none" />
+          <div className="absolute left-1/2 -translate-x-1/2 w-[300px] sm:w-[600px] h-[200px] bg-purple-700/20 blur-[80px] rounded-full pointer-events-none" />
 
           <div className="relative">
             <p className="text-purple-400 text-sm font-medium tracking-widest uppercase mb-4">
               Get started
             </p>
-            <h2 className="text-4xl md:text-5xl font-display font-semibold text-white mb-5 leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-display font-semibold text-white mb-5 leading-tight">
               Your team's treasury,{' '}
               <span className="bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent">
                 secured.
               </span>
             </h2>
-            <p className="text-gray-400 text-lg mb-10 max-w-xl mx-auto">
+            <p className="text-gray-400 text-base sm:text-lg mb-8 sm:mb-10 max-w-xl mx-auto">
               Connect your wallet and deploy a Safe in under two minutes. No sign-up, no custody, no compromise.
             </p>
 
@@ -526,7 +529,7 @@ export function LandingPage() {
 
       {/* ── Footer ──────────────────────────────────────────────────────── */}
       <footer className="border-t border-white/[0.07]">
-        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-md bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center overflow-hidden">
               <img src="/logo.png" alt="SafeTea" className="w-4 h-4 object-contain" />
