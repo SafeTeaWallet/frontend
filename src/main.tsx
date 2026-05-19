@@ -13,7 +13,10 @@ import { config } from './configs/wagmi-config.ts';
 const queryClient = new QueryClient();
 
 const safeteaTheme: Theme = {
-  ...darkTheme(),
+  ...darkTheme({
+    borderRadius: 'medium',
+    fontStack: 'system',
+  }),
   colors: {
     ...darkTheme().colors,
     accentColor: '#9333ea',
@@ -47,20 +50,13 @@ const safeteaTheme: Theme = {
   fonts: {
     body: 'Inter, ui-sans-serif, system-ui, sans-serif',
   },
-  radii: {
-    ...darkTheme().radii,
-    actionButton: '10px',
-    connectButton: '10px',
-    menuButton: '10px',
-    modal: '16px',
-    modalMobile: '16px',
-  },
   shadows: {
-    ...darkTheme().shadows,
     connectButton: '0 4px 24px rgba(147,51,234,0.3)',
     dialog: '0 24px 64px rgba(0,0,0,0.7)',
+    profileDetailsAction: '0 2px 6px rgba(0,0,0,0.24)',
     selectedOption: '0 2px 8px rgba(147,51,234,0.3)',
     selectedWallet: '0 2px 8px rgba(147,51,234,0.3)',
+    walletLogo: '0 2px 8px rgba(0,0,0,0.3)',
   },
 };
 
