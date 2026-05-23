@@ -301,7 +301,7 @@ export const ERC20_ABI = [
 
 export const SAFETEA_FACTORY_ADDRESS =
   (import.meta.env.VITE_SAFETEA_FACTORY_ADDRESS as string) ||
-  "0xff214105529499f00bd6e6f099BA471C2338ab82";
+  "0x5EA695EeBA74e46EAB14425652C3943a9b89412f";
 
 // OwnerProposalType enum values matching the contract
 export const OwnerProposalType = {
